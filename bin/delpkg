@@ -1,0 +1,140 @@
+#!/usr/bin/env python
+""" Delete packages from a repository.
+Functions:
+    move_pkgfiles(repo, files=None)
+    repo_add(repo, opts, filelist)
+    clear_cachedir(repo)
+"""
+
+import argparse
+import logging
+import pathlib
+import subprocess
+import sys
+
+import packaging_scripts.pacmanconf as pacmanconf
+import packaging_scripts.pkgfiles as pkgfiles
+
+console_formatter = logging.Formatter('==> %(level)s %(message)s')
+syslog = logging.getLogger(__name__)
+syslog.setLevel(logging.DEBUG)
+
+stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler.setLevel(logging.INFO)
+stdout_handler.setFormatter(console_formatter)
+
+stderr_handler = logging.StreamHandler()
+stderr_handler.setLevel(logging.ERROR)
+stderr_handler.setFormatter(console_formatter)
+
+syslog.addHandler(stdout_handler)
+syslog.addHandler(stderr_handler)
+
+
+def del_pkgfiles(repo, pkgs):
+    """ Remove package files from the repository directory.
+    Parameters:
+        repo: the repository to delete from
+        pkgs: a list of packages to remove
+    """
+    syslog.info('Removing package files from cachedir')
+    cachedir = pathlib.Path(f'/var/cache/pacman/{repo}')
+    syslog.debug(f"Cache directory: {cachedir}")
+    syslog.debug(f"Packages: {pkgs}")
+
+    for pkg in pkgs:
+        for pkgfile in cachedir.glob(f"{pkg}*.pkg.tar.xz*"):
+            pkgfile.unlink()
+            syslog.info(f"Removed {pkgfile}")
+
+
+def repo_remove(repo, pkgs, opts=None):
+    """ Run repo-remove.
+    Parameters:
+        repo: the repository to remove from
+        pkgs: the names of the packages to remove
+        opts: the list of options to pass to repo-remove
+    Raises:
+        subprocess.CalledProcessError if repo-add failed
+    """
+    syslog.info('Removing packages from database')
+    syslog.debug(f"Options: {opts}")
+    syslog.debug(f"Packages: {pkgs}")
+    db = pathlib.Path(f"/var/cache/pacman/{repo}/{repo}.db.tar.xz")
+
+    cmd = ['repo-remove']
+
+    if opts is not None:
+        cmd.extend(opts)
+
+    cmd.append(str(db))
+    cmd.extend(pkgs)
+    syslog.debug(f"Final repo-remove command: {cmd}")
+
+    remove_process = subprocess.run(cmd,
+                                    check=True,
+                                    capture_output=True,
+                                    text=True)
+
+    syslog.debug(remove_process.stdout)
+    if remove_process.stderr:
+        syslog.error(remove_process.stderr)
+
+    syslog.info('Finished removing packages from database')
+
+
+def clean_cachedir(repo):
+    """ Run paccache """
+    syslog.info('Running paccache')
+    subprocess.run(['paccache',
+                    '--remove',
+                    '--verbose',
+                    '--keep=1',
+                    f"--cachedir=/var/cache/pacman/{repo}"])
+    syslog.info('Finished running paccache')
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--clean-cachedir',
+                        action='store_true',
+                        help='use paccache to clean the cache directory')
+    parser.add_argument('-s', '--sign',
+                        dest='opts',
+                        action='append_const',
+                        const='--sign',
+                        help='sign repository file')
+    parser.add_argument('-v', '--verbose',
+                        action='store_true',
+                        help='increase script verbosity')
+    parser.add_argument('repository',
+                        choices=pacmanconf.list_configured_repos(),
+                        help='the repository to operate on',
+                        metavar='repo')
+    parser.add_argument('packages',
+                        default=None,
+                        nargs='+',
+                        help='packages to remove')
+
+    args = parser.parse_args()
+    repo = args.repository
+    pkgs = args.packages
+    opts = args.opts
+    clean = args.clean_cachedir
+
+    if args.verbose:
+        stdout_handler.setLevel(logging.DEBUG)
+
+    if not pathlib.Path(f"/var/cache/pacman/{args.repository}").is_dir():
+        syslog.critical(f"Not a repository: {repo}")
+
+    del_pkgfiles(repo, pkgs)
+
+    try:
+        repo_remove(repo, pkgs, opts)
+    except subprocess.CalledProcessError as e:
+        syslog.error(e)
+        exit(2)
+
+    if clean:
+        clean_cachedir(repo)

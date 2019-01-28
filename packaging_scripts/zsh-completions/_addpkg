@@ -1,0 +1,17 @@
+#compdef addpkg
+
+# zsh completions for 'addpkg'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[show this help message and exit]'
+  {-C,--compression-type}'[the compression algorithm the db is using]'
+  {-c,--clean-cachedir}'[use paccache to clean the cache directory]'
+  {-R,--remove}'[remove old package files]'
+  {-s,--sign}'[sign repository file]'
+  {-v,--verbose}'[increase script verbosity]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments
