@@ -10,10 +10,12 @@ def get_pkgfiles(directory=None, signatures=False):
 
     :param directory: a directory to search in
     :type directory: str, bytes, or path-like object
+    :param signatures: include only signature files
+    :type signatures: bool
     :returns: paths of package files
     :rtype: list
     """
-    if directory:
+    if directory is not None:
         path = pathlib.Path(directory)
     else:
         path = pathlib.Path.cwd()
