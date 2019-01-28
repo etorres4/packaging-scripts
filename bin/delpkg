@@ -20,7 +20,7 @@ REPO_REMOVE_CMD = '/usr/bin/repo-remove'
 DB_EXT = 'db.tar.xz'
 
 # ========== Logging setup ==========
-console_formatter = logging.Formatter('==> %(level)s %(message)s')
+console_formatter = logging.Formatter('==> %(levelname)s %(message)s')
 syslog = logging.getLogger(__name__)
 syslog.setLevel(logging.DEBUG)
 
