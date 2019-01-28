@@ -7,13 +7,13 @@ PKGEXT = 'pkg.tar.xz'
 SIGEXT = f"{PKGEXT}.sig"
 
 # ========== Functions ==========
-def get_pkgfiles(query, directory=None, signatures=False):
+def get_pkgfiles(query, directory=None, signatures_only=False):
     """Return a list of package files in the current working directory.
 
     :param directory: a directory to search in
     :type directory: str, bytes, or path-like object
-    :param signatures: include only signature files
-    :type signatures: bool
+    :param signatures_only: include only signature files
+    :type signatures_only: bool
     :returns: paths of package files
     :rtype: list
     """
@@ -22,7 +22,7 @@ def get_pkgfiles(query, directory=None, signatures=False):
     else:
         path = pathlib.Path.cwd()
 
-    if signatures:
+    if signatures_only:
         return list(path.glob(f"{query}*.{SIGEXT}"))
 
     return list(path.glob(f"{query}*.{PKGEXT}"))
