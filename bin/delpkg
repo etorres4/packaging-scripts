@@ -49,9 +49,9 @@ def del_pkgfiles(cachedir, pkgs):
     syslog.debug(f"Cache directory: {cachedir}")
     syslog.debug(f"Packages: {pkgs}")
 
+    # TODO separate list for sigfiles
     for pkg in pkgs:
-        for pkgfile in pkgfiles.get_pkgfiles(directory=cachedir,
-                                             signatures=True):
+        for pkgfile in pkgfiles.get_pkgfiles(pkg, directory=cachedir):
             pkgfile.unlink()
             syslog.info(f"Removed {pkgfile}")
 
