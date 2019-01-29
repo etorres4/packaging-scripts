@@ -18,7 +18,7 @@ setuptools.setup(
     long_description_content_type="text/plain",
     url="",
     packages=setuptools.find_packages(),
-    scripts=['bin/delpkg', 'bin/fqo'],
+    scripts=['bin/addpkg', 'bin/delpkg', 'bin/fqo'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GPL3 License",
