@@ -45,13 +45,13 @@ def del_pkgfiles(cachedir, pkgs):
     :param pkgs: names of packages to remove
     :type pkgs: any container object
     """
-    syslog.info('Removing package files from cachedir')
-    syslog.debug(f"Cache directory: {cachedir}")
+    syslog.info(f"Removing package files from {cachedir}")
     syslog.debug(f"Packages: {pkgs}")
 
-    # TODO separate list for sigfiles
     for pkg in pkgs:
-        for pkgfile in pkgfiles.get_pkgfiles(pkg, directory=cachedir):
+        for pkgfile in pkgfiles.get_pkgfiles(pkg, directory=cachedir) +\
+                       pkgfiles.get_pkgfiles(pkg, directory=cachedir,
+                                             signatures_only=True):
             pkgfile.unlink()
             syslog.info(f"Removed {pkgfile}")
 
@@ -124,7 +124,7 @@ if __name__ == '__main__':
     if args.verbose:
         stdout_handler.setLevel(logging.DEBUG)
 
-    del_pkgfiles(repo, pkgs)
+    del_pkgfiles(cachedir, pkgs)
 
     try:
         repo_remove(repo, pkgs, opts)
