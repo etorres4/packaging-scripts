@@ -3,8 +3,8 @@
 
 Functions:
 ==========
-    add_pkgfiles(cachedir, pkgs)
-    repo_add(db, pkgs, opts=None)
+add_pkgfiles(cachedir, pkgs)
+repo_add(db, pkgs, opts=None)
 """
 
 import argparse
