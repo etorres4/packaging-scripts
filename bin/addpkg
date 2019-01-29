@@ -17,8 +17,11 @@ import packaging_scripts.pacmanconf as pacmanconf
 import packaging_scripts.pkgfiles as pkgfiles
 
 # ========== Constants ==========
-REPO_ADD_CMD = '/usr/bin/repo-remove'
+REPO_ADD_CMD = '/usr/bin/repo-add'
 DB_EXT = 'db.tar.xz'
+
+# ========== Exit codes ==========
+E_REPO_ADDERR = 2
 
 # ========== Logging setup ==========
 console_formatter = logging.Formatter('==> %(levelname)s %(message)s')
@@ -38,24 +41,16 @@ syslog.addHandler(stderr_handler)
 
 
 # ========== Functions ==========
-def add_pkgfiles(cachedir, pkgs=None):
-    """Add package files to the repository directory.
+def add_pkgfile(pkg, cachedir):
+    """Add package file to the repository directory.
 
-    :param pkgs: names of packages to add
-    :type pkgs: any container object
+    :param pkg: path of package to add
+    :type pkg: str, bytes, or path-like object
+    :param cachedir: cache directory to move package to
+    :type cachedir: str, bytes, or path-like object
     """
-    syslog.info(f"Adding package files to {cachedir}")
-    syslog.debug(f"Packages: {pkgs}")
-
-    if pkgs is not None:
-        pkglist = pkgs
-    else:
-        pkglist = pkgfiles.get_pkgfiles() +\
-                  pkgfiles.get_pkgfiles(signatures_only=True)
-
-    for pkg in pkglist:
-        shutil.move(pkg, cachedir)
-        syslog.info(f"Added {pkg}")
+    syslog.info(f"Adding {pkg} to {cachedir}")
+    shutil.move(pkg, cachedir)
 
 
 def repo_add(db, pkgs, opts=None):
@@ -65,9 +60,9 @@ def repo_add(db, pkgs, opts=None):
     :type repo: str
     :param pkgs: the names of the packages to remove
     :type pkgs: any iterable
-    :param opts: extra options to pass to repo-remove
+    :param opts: extra options to pass to repo-add
     :type opts: list
-    :raises: subprocess.CalledProcessError if repo-remove failed
+    :raises: subprocess.CalledProcessError if repo-add failed
     """
     syslog.info('Adding packages to database')
     syslog.debug(f"Options: {opts}")
@@ -121,15 +116,21 @@ if __name__ == '__main__':
     cachedir = f"/var/cache/pacman/{repo}"
     # this assumes that the db file for the repo
     # has the same name as that repo
-    db = f"{cachedir}/{repo}/.{DB_EXT}"
+    db = f"{cachedir}/{repo}.{DB_EXT}"
 
     if args.verbose:
         stdout_handler.setLevel(logging.DEBUG)
 
-    add_pkgfiles(cachedir, pkgs)
+    if pkgs:
+        pkglist = pkgs
+    else:
+        pkglist = pkgfiles.get_pkgfiles() +\
+                  pkgfiles.get_pkgfiles(signatures_only=True)
 
     try:
-        repo_add(repo, pkgs, opts)
+        repo_add(db, pkglist, opts)
     except subprocess.CalledProcessError as e:
         syslog.error(e)
-        exit(2)
+        exit(E_REPO_ADDERR)
+
+    map(lambda pkg: add_pkgfile(pkg, cachedir), pkglist)
