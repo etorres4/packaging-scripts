@@ -38,7 +38,7 @@ syslog.addHandler(stderr_handler)
 
 # ========== Functions ==========
 def del_pkgfiles(cachedir, pkgs):
-    """ Remove package files from the repository directory.
+    """Remove package files from the repository directory.
 
     :param cachedir: directory to operate on
     :type cachedir: str, bytes, or path-like object
@@ -57,7 +57,7 @@ def del_pkgfiles(cachedir, pkgs):
 
 
 def repo_remove(db, pkgs, opts=None):
-    """ Run repo-remove.
+    """Run repo-remove.
 
     :param repo: the repository to remove from
     :type repo: str
