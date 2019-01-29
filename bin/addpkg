@@ -1,0 +1,133 @@
+#!/usr/bin/python3
+""" Add packages to a repository.
+
+Functions:
+==========
+    add_pkgfiles(cachedir, pkgs)
+    repo_add(db, pkgs, opts=None)
+"""
+
+import argparse
+import logging
+import subprocess
+import sys
+
+import packaging_scripts.pacmanconf as pacmanconf
+import packaging_scripts.pkgfiles as pkgfiles
+
+# ========== Constants ==========
+REPO_ADD_CMD = '/usr/bin/repo-remove'
+DB_EXT = 'db.tar.xz'
+
+# ========== Logging setup ==========
+console_formatter = logging.Formatter('==> %(levelname)s %(message)s')
+syslog = logging.getLogger(__name__)
+syslog.setLevel(logging.DEBUG)
+
+stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler.setLevel(logging.INFO)
+stdout_handler.setFormatter(console_formatter)
+
+stderr_handler = logging.StreamHandler()
+stderr_handler.setLevel(logging.ERROR)
+stderr_handler.setFormatter(console_formatter)
+
+syslog.addHandler(stdout_handler)
+syslog.addHandler(stderr_handler)
+
+
+# ========== Functions ==========
+def add_pkgfiles(cachedir, pkgs):
+    """ Remove package files from the repository directory.
+
+    :param cachedir: directory to operate on
+    :type cachedir: str, bytes, or path-like object
+    :param pkgs: names of packages to remove
+    :type pkgs: any container object
+    """
+    syslog.info(f"Adding package files to {cachedir}")
+    syslog.debug(f"Packages: {pkgs}")
+
+    for pkg in pkgs:
+        for pkgfile in pkgfiles.get_pkgfiles(pkg, directory=cachedir) +\
+                       pkgfiles.get_pkgfiles(pkg, directory=cachedir,
+                                             signatures_only=True):
+            pkgfile.unlink()
+            syslog.info(f"Added {pkgfile}")
+
+
+def repo_add(db, pkgs, opts=None):
+    """ Run repo-add.
+
+    :param repo: the repository to remove from
+    :type repo: str
+    :param pkgs: the names of the packages to remove
+    :type pkgs: any iterable
+    :param opts: extra options to pass to repo-remove
+    :type opts: list
+    :raises: subprocess.CalledProcessError if repo-remove failed
+    """
+    syslog.info('Adding packages to database')
+    syslog.debug(f"Options: {opts}")
+    syslog.debug(f"Packages: {pkgs}")
+
+    cmd = [REPO_ADD_CMD]
+
+    if opts is not None:
+        cmd.extend(opts)
+
+    cmd.append(db)
+    cmd.extend(pkgs)
+    syslog.debug(f"Final repo-add command: {cmd}")
+
+    add_process = subprocess.run(cmd,
+                                 check=True,
+                                 capture_output=True,
+                                 text=True)
+
+    syslog.debug(add_process.stdout)
+    if add_process.stderr:
+        syslog.error(add_process.stderr)
+
+    syslog.info('Finished adding packages to database')
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-s', '--sign',
+                        dest='opts',
+                        action='append_const',
+                        const='--sign',
+                        help='sign repository file')
+    parser.add_argument('-v', '--verbose',
+                        action='store_true',
+                        help='increase script verbosity')
+    parser.add_argument('repository',
+                        choices=pacmanconf.list_configured_repos(),
+                        help='the repository to operate on',
+                        metavar='repo')
+    parser.add_argument('packages',
+                        default=None,
+                        nargs='+',
+                        help='packages to remove')
+
+    args = parser.parse_args()
+    repo = args.repository
+    pkgs = args.packages
+    opts = args.opts
+
+    cachedir = f"/var/cache/pacman/{repo}"
+    # this assumes that the db file for the repo
+    # has the same name as that repo
+    db = f"{cachedir}/{repo}/.{DB_EXT}"
+
+    if args.verbose:
+        stdout_handler.setLevel(logging.DEBUG)
+
+    add_pkgfiles(cachedir, pkgs)
+
+    try:
+        repo_add(repo, pkgs, opts)
+    except subprocess.CalledProcessError as e:
+        syslog.error(e)
+        exit(2)
