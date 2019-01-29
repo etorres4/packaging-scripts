@@ -108,8 +108,8 @@ if __name__ == '__main__':
                         metavar='repo')
     parser.add_argument('packages',
                         default=None,
-                        nargs='+',
-                        help='packages to remove')
+                        nargs='*',
+                        help='packages to add')
 
     args = parser.parse_args()
     repo = args.repository
