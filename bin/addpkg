@@ -9,6 +9,7 @@ Functions:
 
 import argparse
 import logging
+import shutil
 import subprocess
 import sys
 
@@ -37,27 +38,28 @@ syslog.addHandler(stderr_handler)
 
 
 # ========== Functions ==========
-def add_pkgfiles(cachedir, pkgs):
-    """ Remove package files from the repository directory.
+def add_pkgfiles(cachedir, pkgs=None):
+    """Add package files to the repository directory.
 
-    :param cachedir: directory to operate on
-    :type cachedir: str, bytes, or path-like object
-    :param pkgs: names of packages to remove
+    :param pkgs: names of packages to add
     :type pkgs: any container object
     """
     syslog.info(f"Adding package files to {cachedir}")
     syslog.debug(f"Packages: {pkgs}")
 
-    for pkg in pkgs:
-        for pkgfile in pkgfiles.get_pkgfiles(pkg, directory=cachedir) +\
-                       pkgfiles.get_pkgfiles(pkg, directory=cachedir,
-                                             signatures_only=True):
-            pkgfile.unlink()
-            syslog.info(f"Added {pkgfile}")
+    if pkgs is not None:
+        pkglist = pkgs
+    else:
+        pkglist = pkgfiles.get_pkgfiles() +\
+                  pkgfiles.get_pkgfiles(signatures_only=True)
+
+    for pkg in pkglist:
+        shutil.move(pkg, cachedir)
+        syslog.info(f"Added {pkg}")
 
 
 def repo_add(db, pkgs, opts=None):
-    """ Run repo-add.
+    """Run repo-add.
 
     :param repo: the repository to remove from
     :type repo: str
