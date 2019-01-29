@@ -3,12 +3,13 @@
 
 Functions:
 ==========
-    del_pkgfiles(cachedir, pkgs)
-    repo_remove(db, pkgs, opts=None)
+* del_pkgfiles(cachedir, pkgs)
+* repo_remove(db, pkgs, opts=None)
 """
 
 import argparse
 import logging
+import shutil
 import subprocess
 import sys
 
@@ -18,6 +19,9 @@ import packaging_scripts.pkgfiles as pkgfiles
 # ========== Constants ==========
 REPO_REMOVE_CMD = '/usr/bin/repo-remove'
 DB_EXT = 'db.tar.xz'
+
+# ========== Exit codes ==========
+E_REPO_REMOVEERR = 2
 
 # ========== Logging setup ==========
 console_formatter = logging.Formatter('==> %(levelname)s %(message)s')
@@ -37,23 +41,14 @@ syslog.addHandler(stderr_handler)
 
 
 # ========== Functions ==========
-def del_pkgfiles(cachedir, pkgs):
-    """Remove package files from the repository directory.
+def del_pkgfile(pkg):
+    """Remove package file.
 
-    :param cachedir: directory to operate on
-    :type cachedir: str, bytes, or path-like object
-    :param pkgs: names of packages to remove
-    :type pkgs: any container object
+    :param pkg: path of package to remove
+    :type pkg: str, bytes, or path-like object
     """
-    syslog.info(f"Removing package files from {cachedir}")
-    syslog.debug(f"Packages: {pkgs}")
-
-    for pkg in pkgs:
-        for pkgfile in pkgfiles.get_pkgfiles(pkg, directory=cachedir) +\
-                       pkgfiles.get_pkgfiles(pkg, directory=cachedir,
-                                             signatures_only=True):
-            pkgfile.unlink()
-            syslog.info(f"Removed {pkgfile}")
+    shutil.remove(pkg)
+    syslog.info(f"Removed {pkg}")
 
 
 def repo_remove(db, pkgs, opts=None):
@@ -119,15 +114,18 @@ if __name__ == '__main__':
     cachedir = f"/var/cache/pacman/{repo}"
     # this assumes that the db file for the repo
     # has the same name as that repo
-    db = f"{cachedir}/{repo}/.{DB_EXT}"
+    db = f"{cachedir}/{repo}.{DB_EXT}"
 
     if args.verbose:
         stdout_handler.setLevel(logging.DEBUG)
 
-    del_pkgfiles(cachedir, pkgs)
+    pkglist = pkgfiles.get_pkgfiles(directory=cachedir) +\
+        pkgfiles.get_pkgfiles(directory=cachedir, signatures_only=True)
+
+    map(lambda pkg: del_pkgfile(pkg), pkglist)
 
     try:
-        repo_remove(repo, pkgs, opts)
+        repo_remove(repo, pkglist, opts)
     except subprocess.CalledProcessError as e:
         syslog.error(e)
-        exit(2)
+        exit(E_REPO_REMOVEERR)
