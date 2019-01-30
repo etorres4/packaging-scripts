@@ -9,12 +9,11 @@ Functions:
 
 import argparse
 import logging
-import shutil
 import sys
 
 import packaging_scripts.pacmanconf as pacmanconf
 import packaging_scripts.pkgfiles as pkgfiles
-import packaging_scripts.pkgfiles as repos
+import packaging_scripts.repos as repos
 
 # ========== Constants ==========
 REPO_REMOVE_CMD = '/usr/bin/repo-remove'
@@ -25,19 +24,20 @@ E_REPO_REMOVEERR = 2
 
 # ========== Logging setup ==========
 console_formatter = logging.Formatter('==> %(levelname)s %(message)s')
-syslog = logging.getLogger(__name__)
-syslog.setLevel(logging.DEBUG)
+#logging = logging.getLogger(__name__)
+logging.basicConfig(format='==> %(levelname)s %(message)s',
+                    level=logging.DEBUG)
 
-stdout_handler = logging.StreamHandler(sys.stdout)
-stdout_handler.setLevel(logging.INFO)
-stdout_handler.setFormatter(console_formatter)
-
-stderr_handler = logging.StreamHandler()
-stderr_handler.setLevel(logging.ERROR)
-stderr_handler.setFormatter(console_formatter)
-
-syslog.addHandler(stdout_handler)
-syslog.addHandler(stderr_handler)
+#stdout_handler = logging.StreamHandler(sys.stdout)
+#stdout_handler.setLevel(logging.INFO)
+#stdout_handler.setFormatter(console_formatter)
+#
+#stderr_handler = logging.StreamHandler()
+#stderr_handler.setLevel(logging.ERROR)
+#stderr_handler.setFormatter(console_formatter)
+#
+#logging.addHandler(stdout_handler)
+#logging.addHandler(stderr_handler)
 
 
 # ========== Functions ==========
@@ -45,10 +45,10 @@ def del_pkgfile(pkg):
     """Remove package file.
 
     :param pkg: path of package to remove
-    :type pkg: str, bytes, or path-like object
+    :type pkg: pathlib.Path object
     """
-    shutil.remove(pkg)
-    syslog.info(f"Removed {pkg}")
+    pkg.unlink()
+    logging.info(f"Removed {pkg}")
 
 
 if __name__ == '__main__':
@@ -66,7 +66,6 @@ if __name__ == '__main__':
                         help='the repository to operate on',
                         metavar='repo')
     parser.add_argument('packages',
-                        default=None,
                         nargs='+',
                         help='packages to remove')
 
@@ -80,16 +79,26 @@ if __name__ == '__main__':
     # has the same name as that repo
     db = f"{cachedir}/{repo}.{DB_EXT}"
 
-    if args.verbose:
-        stdout_handler.setLevel(logging.DEBUG)
+#    if args.verbose:
+#        stdout_handler.setLevel(logging.DEBUG)
 
-    pkglist = pkgfiles.get_pkgfiles(directory=cachedir) +\
-        pkgfiles.get_pkgfiles(directory=cachedir, signatures_only=True)
+    logging.debug(f"Packages: {pkgs}")
 
-    map(lambda pkg: del_pkgfile(pkg), pkglist)
+    for pkg in pkgs:
+        pkg_tarballs = pkgfiles.get_pkgfiles(query=pkg,
+                                             directory=cachedir)
+        sigfiles = pkgfiles.get_pkgfiles(query=pkg,
+                                         directory=cachedir,
+                                         signatures_only=True)
 
-    try:
-        repos.repo_add('remove', db, *pkglist, opts=opts)
-    except repos.RepoAddError as e:
-        syslog.error(e)
-        exit(E_REPO_REMOVEERR)
+        for pkg_tarball in pkg_tarballs:
+            del_pkgfile(pkg_tarball)
+
+        for sigfile in sigfiles:
+            del_pkgfile(sigfile)
+
+        try:
+            repos.repo_add('remove', db, pkg, opts=opts)
+        except repos.RepoAddError as e:
+            logging.error(e)
+            pass

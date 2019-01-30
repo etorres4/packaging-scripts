@@ -25,19 +25,19 @@ E_REPO_ADDERR = 2
 
 # ========== Logging setup ==========
 console_formatter = logging.Formatter('==> %(levelname)s %(message)s')
-syslog = logging.getLogger(__name__)
-syslog.setLevel(logging.DEBUG)
+logging.basicConfig(format='==> %(levelname)s %(message)s',
+                    level=logging.DEBUG)
 
-stdout_handler = logging.StreamHandler(sys.stdout)
-stdout_handler.setLevel(logging.INFO)
-stdout_handler.setFormatter(console_formatter)
-
-stderr_handler = logging.StreamHandler()
-stderr_handler.setLevel(logging.ERROR)
-stderr_handler.setFormatter(console_formatter)
-
-syslog.addHandler(stdout_handler)
-syslog.addHandler(stderr_handler)
+#stdout_handler = logging.StreamHandler(sys.stdout)
+#stdout_handler.setLevel(logging.INFO)
+#stdout_handler.setFormatter(console_formatter)
+#
+#stderr_handler = logging.StreamHandler()
+#stderr_handler.setLevel(logging.ERROR)
+#stderr_handler.setFormatter(console_formatter)
+#
+#logging.addHandler(stdout_handler)
+#logging.addHandler(stderr_handler)
 
 
 # ========== Functions ==========
@@ -49,8 +49,8 @@ def add_pkgfile(pkg, cachedir):
     :param cachedir: cache directory to move package to
     :type cachedir: str, bytes, or path-like object
     """
-    syslog.info(f"Adding {pkg} to {cachedir}")
-    shutil.move(pkg, cachedir)
+    logging.info(f"Adding {pkg} to {cachedir}")
+    shutil.move(str(pkg), cachedir)
 
 
 if __name__ == '__main__':
@@ -82,20 +82,24 @@ if __name__ == '__main__':
     # has the same name as that repo
     db = f"{cachedir}/{repo}.{DB_EXT}"
 
-    if args.verbose:
-        stdout_handler.setLevel(logging.DEBUG)
+#    if args.verbose:
+#        stdout_handler.setLevel(logging.DEBUG)
 
     if pkgs:
-        pkglist = pkgs
-        siglist = []
+        pkg_tarballs = pkgs
+        sigfiles = []
     else:
-        pkglist = pkgfiles.get_pkgfiles()
-        siglist = pkgfiles.get_pkgfiles(signatures_only=True)
+        pkg_tarballs = list(pkgfiles.get_pkgfiles())
+        sigfiles = list(pkgfiles.get_pkgfiles(signatures_only=True))
 
     try:
-        repos.repo_add('add', db, *pkglist, opts=opts)
+        repos.repo_add('add', db, *pkg_tarballs, opts=opts)
     except repos.RepoAddError as e:
-        syslog.error(e)
+        logging.error(e)
         exit(E_REPO_ADDERR)
 
-    map(lambda pkg: add_pkgfile(pkg, cachedir), pkglist + siglist)
+    for pkg_tarball in pkg_tarballs:
+        add_pkgfile(pkg_tarball, cachedir)
+
+    for sigfile in sigfiles:
+        add_pkgfile(sigfile, cachedir)
