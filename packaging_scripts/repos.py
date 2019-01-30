@@ -41,7 +41,6 @@ def repo_add(operation, db, *pkgs, opts=None):
     :type pkgs: any iterable
     :raises: RepoAddError if repo-add failed
     """
-
     if operation == 'add':
         syslog.info('Adding packages to database')
         cmd = [REPO_ADD_CMD]
@@ -49,6 +48,7 @@ def repo_add(operation, db, *pkgs, opts=None):
         syslog.info('Removing packages from database')
         cmd = [REPO_REMOVE_CMD]
 
+    syslog.debug(f"Database: {db}")
     syslog.debug(f"Options: {opts}")
     syslog.debug(f"Packages: {pkgs}")
 
