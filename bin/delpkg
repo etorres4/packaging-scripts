@@ -10,11 +10,11 @@ Functions:
 import argparse
 import logging
 import shutil
-import subprocess
 import sys
 
 import packaging_scripts.pacmanconf as pacmanconf
 import packaging_scripts.pkgfiles as pkgfiles
+import packaging_scripts.pkgfiles as repos
 
 # ========== Constants ==========
 REPO_REMOVE_CMD = '/usr/bin/repo-remove'
@@ -49,42 +49,6 @@ def del_pkgfile(pkg):
     """
     shutil.remove(pkg)
     syslog.info(f"Removed {pkg}")
-
-
-def repo_remove(db, pkgs, opts=None):
-    """Run repo-remove.
-
-    :param repo: the repository to remove from
-    :type repo: str
-    :param pkgs: the names of the packages to remove
-    :type pkgs: any iterable
-    :param opts: extra options to pass to repo-remove
-    :type opts: list
-    :raises: subprocess.CalledProcessError if repo-remove failed
-    """
-    syslog.info('Removing packages from database')
-    syslog.debug(f"Options: {opts}")
-    syslog.debug(f"Packages: {pkgs}")
-
-    cmd = [REPO_REMOVE_CMD]
-
-    if opts is not None:
-        cmd.extend(opts)
-
-    cmd.append(db)
-    cmd.extend(pkgs)
-    syslog.debug(f"Final repo-remove command: {cmd}")
-
-    remove_process = subprocess.run(cmd,
-                                    check=True,
-                                    capture_output=True,
-                                    text=True)
-
-    syslog.debug(remove_process.stdout)
-    if remove_process.stderr:
-        syslog.error(remove_process.stderr)
-
-    syslog.info('Finished removing packages from database')
 
 
 if __name__ == '__main__':
@@ -125,7 +89,7 @@ if __name__ == '__main__':
     map(lambda pkg: del_pkgfile(pkg), pkglist)
 
     try:
-        repo_remove(repo, pkglist, opts)
-    except subprocess.CalledProcessError as e:
+        repos.repo_add('remove', db, *pkglist, opts=opts)
+    except repos.RepoAddError as e:
         syslog.error(e)
         exit(E_REPO_REMOVEERR)

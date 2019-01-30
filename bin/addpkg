@@ -3,18 +3,18 @@
 
 Functions:
 ==========
-add_pkgfiles(cachedir, pkgs)
-repo_add(db, pkgs, opts=None)
+* add_pkgfiles(cachedir, pkgs)
+* repo_add(db, pkgs, opts=None)
 """
 
 import argparse
 import logging
 import shutil
-import subprocess
 import sys
 
 import packaging_scripts.pacmanconf as pacmanconf
 import packaging_scripts.pkgfiles as pkgfiles
+import packaging_scripts.repos as repos
 
 # ========== Constants ==========
 REPO_ADD_CMD = '/usr/bin/repo-add'
@@ -53,42 +53,6 @@ def add_pkgfile(pkg, cachedir):
     shutil.move(pkg, cachedir)
 
 
-def repo_add(db, pkgs, opts=None):
-    """Run repo-add.
-
-    :param repo: the repository to remove from
-    :type repo: str
-    :param pkgs: the names of the packages to remove
-    :type pkgs: any iterable
-    :param opts: extra options to pass to repo-add
-    :type opts: list
-    :raises: subprocess.CalledProcessError if repo-add failed
-    """
-    syslog.info('Adding packages to database')
-    syslog.debug(f"Options: {opts}")
-    syslog.debug(f"Packages: {pkgs}")
-
-    cmd = [REPO_ADD_CMD]
-
-    if opts is not None:
-        cmd.extend(opts)
-
-    cmd.append(db)
-    cmd.extend(pkgs)
-    syslog.debug(f"Final repo-add command: {cmd}")
-
-    add_process = subprocess.run(cmd,
-                                 check=True,
-                                 capture_output=True,
-                                 text=True)
-
-    syslog.debug(add_process.stdout)
-    if add_process.stderr:
-        syslog.error(add_process.stderr)
-
-    syslog.info('Finished adding packages to database')
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--sign',
@@ -123,14 +87,15 @@ if __name__ == '__main__':
 
     if pkgs:
         pkglist = pkgs
+        siglist = []
     else:
-        pkglist = pkgfiles.get_pkgfiles() +\
-                  pkgfiles.get_pkgfiles(signatures_only=True)
+        pkglist = pkgfiles.get_pkgfiles()
+        siglist = pkgfiles.get_pkgfiles(signatures_only=True)
 
     try:
-        repo_add(db, pkglist, opts)
-    except subprocess.CalledProcessError as e:
+        repos.repo_add('add', db, *pkglist, opts=opts)
+    except repos.RepoAddError as e:
         syslog.error(e)
         exit(E_REPO_ADDERR)
 
-    map(lambda pkg: add_pkgfile(pkg, cachedir), pkglist)
+    map(lambda pkg: add_pkgfile(pkg, cachedir), pkglist + siglist)
