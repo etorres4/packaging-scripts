@@ -5,7 +5,6 @@
 local arguments
 
 arguments=(
-  {-c,--clean-cachedir}'[run paccache to clean the cache directory]'
   {-h,--help}'[show this help message and exit]'
   {-s,--sign}'[sign repository file]'
   {-v,--verbose}'[increase script verbosity]'
