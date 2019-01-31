@@ -9,8 +9,7 @@ Functions:
 
 import argparse
 import logging
-import shutil
-import sys
+import os
 
 import packaging_scripts.pacmanconf as pacmanconf
 import packaging_scripts.pkgfiles as pkgfiles
@@ -19,25 +18,15 @@ import packaging_scripts.repos as repos
 # ========== Constants ==========
 REPO_ADD_CMD = '/usr/bin/repo-add'
 DB_EXT = 'db.tar.xz'
+LOGFORMAT = '==> %(levelname)s %(message)s'
 
 # ========== Exit codes ==========
 E_REPO_ADDERR = 2
 
 # ========== Logging setup ==========
-console_formatter = logging.Formatter('==> %(levelname)s %(message)s')
-logging.basicConfig(format='==> %(levelname)s %(message)s',
+console_formatter = logging.Formatter(LOGFORMAT)
+logging.basicConfig(format=LOGFORMAT,
                     level=logging.DEBUG)
-
-#stdout_handler = logging.StreamHandler(sys.stdout)
-#stdout_handler.setLevel(logging.INFO)
-#stdout_handler.setFormatter(console_formatter)
-#
-#stderr_handler = logging.StreamHandler()
-#stderr_handler.setLevel(logging.ERROR)
-#stderr_handler.setFormatter(console_formatter)
-#
-#logging.addHandler(stdout_handler)
-#logging.addHandler(stderr_handler)
 
 
 # ========== Functions ==========
@@ -45,12 +34,12 @@ def add_pkgfile(pkg, cachedir):
     """Add package file to the repository directory.
 
     :param pkg: path of package to add
-    :type pkg: str, bytes, or path-like object
+    :type pkg: pathlib.Path object
     :param cachedir: cache directory to move package to
-    :type cachedir: str, bytes, or path-like object
+    :type cachedir: pathlib.Path object
     """
     logging.info(f"Adding {pkg} to {cachedir}")
-    shutil.move(str(pkg), cachedir)
+    os.rename(pkg, cachedir.joinpath(pkg.name))
 
 
 if __name__ == '__main__':
