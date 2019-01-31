@@ -9,7 +9,9 @@ Functions:
 
 import argparse
 import logging
-import os
+import pathlib
+import shutil
+import sys
 
 import packaging_scripts.pacmanconf as pacmanconf
 import packaging_scripts.pkgfiles as pkgfiles
@@ -21,12 +23,19 @@ DB_EXT = 'db.tar.xz'
 LOGFORMAT = '==> %(levelname)s %(message)s'
 
 # ========== Exit codes ==========
+E_NOFILESERR = 1
 E_REPO_ADDERR = 2
 
 # ========== Logging setup ==========
 console_formatter = logging.Formatter(LOGFORMAT)
-logging.basicConfig(format=LOGFORMAT,
-                    level=logging.DEBUG)
+syslog = logging.getLogger('packaging_scripts')
+syslog.setLevel(logging.DEBUG)
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.ERROR)
+console_handler.setFormatter(console_formatter)
+
+syslog.addHandler(console_handler)
 
 
 # ========== Functions ==========
@@ -34,12 +43,15 @@ def add_pkgfile(pkg, cachedir):
     """Add package file to the repository directory.
 
     :param pkg: path of package to add
-    :type pkg: pathlib.Path object
+    :type pkg: str, bytes, or path-like object
     :param cachedir: cache directory to move package to
-    :type cachedir: pathlib.Path object
+    :type cachedir: str, bytes, or path-like object
     """
-    logging.info(f"Adding {pkg} to {cachedir}")
-    os.rename(pkg, cachedir.joinpath(pkg.name))
+    syslog.info(f"Adding {pkg} to {cachedir}")
+
+    pkgpath = pathlib.Path(pkg)
+    cachepath = pathlib.Path(cachedir)
+    shutil.move(str(pkgpath), str(cachepath.joinpath(pkg.name)))
 
 
 if __name__ == '__main__':
@@ -71,8 +83,8 @@ if __name__ == '__main__':
     # has the same name as that repo
     db = f"{cachedir}/{repo}.{DB_EXT}"
 
-#    if args.verbose:
-#        stdout_handler.setLevel(logging.DEBUG)
+    if args.verbose:
+        stdout_handler.setLevel(logging.DEBUG)
 
     if pkgs:
         pkg_tarballs = pkgs
@@ -81,10 +93,14 @@ if __name__ == '__main__':
         pkg_tarballs = list(pkgfiles.get_pkgfiles())
         sigfiles = list(pkgfiles.get_pkgfiles(signatures_only=True))
 
+    if not pkg_tarballs:
+        syslog.critical('No package tarballs have been found, exiting')
+        exit(E_NOFILESERR)
+
     try:
         repos.repo_add('add', db, *pkg_tarballs, opts=opts)
     except repos.RepoAddError as e:
-        logging.error(e)
+        syslog.error(e)
         exit(E_REPO_ADDERR)
 
     for pkg_tarball in pkg_tarballs:
