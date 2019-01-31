@@ -3,9 +3,11 @@
 import configparser
 import pathlib
 
+# ========== Constants ==========
 PACMAN_CONF = pathlib.Path('/etc/pacman.conf')
 
 
+# ========== Functions ==========
 def parse_configfile(filepath):
     """Parse a config file given its path and return
     a ConfigParser object.
