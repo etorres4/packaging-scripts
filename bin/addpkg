@@ -84,7 +84,7 @@ if __name__ == '__main__':
     db = f"{cachedir}/{repo}.{DB_EXT}"
 
     if args.verbose:
-        stdout_handler.setLevel(logging.DEBUG)
+        console_handler.setLevel(logging.DEBUG)
 
     if pkgs:
         pkg_tarballs = pkgs
