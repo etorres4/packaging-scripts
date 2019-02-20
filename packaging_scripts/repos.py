@@ -48,7 +48,7 @@ def db_modify(operation, db, *args):
     syslog.debug(f"Arguments: {args}")
 
     try:
-        process = _run_script(operation, *args)
+        process = _run_script(operation, db, *args)
     except subprocess.CalledProcessError as e:
         raise RepoAddError(e)
     else:
