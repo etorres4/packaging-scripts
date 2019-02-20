@@ -9,6 +9,7 @@ Functions:
 
 import argparse
 import logging
+import sys
 
 import packaging_scripts.pacmanconf as pacmanconf
 import packaging_scripts.pkgfiles as pkgfiles
