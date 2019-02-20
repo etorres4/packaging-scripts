@@ -14,7 +14,6 @@ class RepoAddError(BaseException):
 
 
 # ========== Functions ==========
-# TODO generalize this function
 def db_modify(operation, db, *args):
     """Run either repo-add or repo-remove.
 
@@ -50,8 +49,8 @@ def db_modify(operation, db, *args):
 
     try:
         process = _run_script(operation, *args)
-    except subprocess.CalledProcessError:
-        raise RepoAddError(process.stderr)
+    except subprocess.CalledProcessError as e:
+        raise RepoAddError(e)
     else:
         syslog.debug(process.stdout)
         syslog.info('Database operation complete')
