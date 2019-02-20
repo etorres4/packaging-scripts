@@ -39,7 +39,7 @@ def gen_cmdline(operation, db, opts, *pkgs):
     :rtype: list
     :raises: ValueError if operation was invalid
     """
-    if not operation == 'add' or operation == 'remove':
+    if not operation == 'add' or not operation == 'remove':
         raise ValueError('Invalid operation was requested')
 
     cmd = [f"/usr/bin/repo-{operation}"]
@@ -74,6 +74,7 @@ def repo_add(operation, db, *pkgs, opts=None):
         then pkgs is the name of the packages to remove from the database.
     :type pkgs: any iterable
     :raises: RepoAddError if repo-add failed
+    :raises: ValueError if an invalid operation was requested
     """
     if operation == 'add':
         syslog.info('Adding packages to database')
