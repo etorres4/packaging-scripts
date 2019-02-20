@@ -1,6 +1,8 @@
 """Helper functions for dealing with package files."""
 
-import pathlib
+import glob
+import os
+import os.path
 
 # ========== Constants ==========
 PKGEXT = 'pkg.tar.xz'
@@ -18,20 +20,20 @@ def get_pkgfiles(query=None, directory=None, signatures_only=False):
     :param signatures_only: include only signature files
     :type signatures_only: bool
     :returns: paths of package files
-    :rtype: generator
+    :rtype: list
     """
     if directory is not None:
-        path = pathlib.Path(directory)
+        path = directory
     else:
-        path = pathlib.Path.cwd()
+        path = os.getcwd()
 
     if signatures_only:
         if query is not None:
-            return path.glob(f"{query}*.{SIGEXT}")
+            return glob.glob(f"{path}/{query}*.{SIGEXT}")
         else:
-            return path.glob(f"*.{SIGEXT}")
+            return glob.glob(f"{path}/*.{SIGEXT}")
     else:
         if query is not None:
-            return path.glob(f"{query}*.{PKGEXT}")
+            return glob.glob(f"{path}/{query}*.{PKGEXT}")
         else:
-            return path.glob(f"*.{PKGEXT}")
+            return glob.glob(f"{path}/*.{PKGEXT}")
