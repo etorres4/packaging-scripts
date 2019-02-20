@@ -40,7 +40,7 @@ def gen_cmdline(operation, db, opts, *pkgs):
     :raises: ValueError if operation was invalid
     """
     if not operation == 'add' or operation == 'remove':
-        raise ValueError('Invalid operation was raised')
+        raise ValueError('Invalid operation was requested')
 
     cmd = [f"/usr/bin/repo-{operation}"]
 
