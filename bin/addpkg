@@ -9,7 +9,7 @@ Functions:
 
 import argparse
 import logging
-import pathlib
+import os.path
 import shutil
 import sys
 
@@ -45,7 +45,7 @@ syslog.addHandler(stderr_handler)
 
 
 # ========== Functions ==========
-def add_pkgfile(pkg, cachedir):
+def add_pkgfile(pkgfile, cachedir):
     """Add package file to the repository directory.
 
     :param pkg: path of package to add
@@ -53,11 +53,8 @@ def add_pkgfile(pkg, cachedir):
     :param cachedir: cache directory to move package to
     :type cachedir: str, bytes, or path-like object
     """
-    syslog.info(f"Adding {pkg} to {cachedir}")
-
-    pkgpath = pathlib.Path(pkg)
-    cachepath = pathlib.Path(cachedir)
-    shutil.move(str(pkgpath), str(cachepath.joinpath(pkg.name)))
+    syslog.info(f"Adding {pkgfile} to {cachedir}")
+    shutil.move(pkgfile, os.path.join(cachedir, os.path.basename(pkgfile)))
 
 
 if __name__ == '__main__':

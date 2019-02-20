@@ -9,6 +9,7 @@ Functions:
 
 import argparse
 import logging
+import os
 import sys
 
 import packaging_scripts.pacmanconf as pacmanconf
@@ -45,9 +46,9 @@ def del_pkgfile(pkg):
     """Remove package file.
 
     :param pkg: path of package to remove
-    :type pkg: pathlib.Path object
+    :type pkg: str
     """
-    pkg.unlink()
+    os.remove(pkg)
     syslog.info(f"Removed {pkg}")
 
 
