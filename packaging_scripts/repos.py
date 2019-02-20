@@ -4,10 +4,6 @@
 import logging
 import subprocess
 
-# ========== Constants ==========
-REPO_ADD_CMD = '/usr/bin/repo-add'
-REPO_REMOVE_CMD = '/usr/bin/repo-remove'
-
 # ========== Logging setup ==========
 syslog = logging.getLogger(__name__)
 
@@ -18,43 +14,9 @@ class RepoAddError(BaseException):
 
 
 # ========== Functions ==========
-def gen_cmdline(operation, db, opts, *pkgs):
-    """Generate a command suitable for invoking either repo-add or
-    repo-remove.
-
-    :param operation: run either repo-add or repo-remove
-    :type operation: str
-    :param db: the database file to operate on
-    :type db: str, bytes, or path-like object
-    :param opts: extra options to pass to repo-add
-    :type opts: list
-    :param pkgs: these arguments depend on whether the operation is
-        an add or remove.
-        If operation is 'add', then pkgs is all of the paths of the
-        package files to add to the database. If operation is 'remove',
-        then pkgs is the name of the packages to remove from the database.
-    :type pkgs: any iterable
-    :returns: list of command-line arguments suitable for passing to
-        subprocess.run()
-    :rtype: list
-    :raises: ValueError if operation was invalid
-    """
-    if not operation == 'add' or not operation == 'remove':
-        raise ValueError('Invalid operation was requested')
-
-    cmd = [f"/usr/bin/repo-{operation}"]
-
-    if opts is not None:
-        cmd.extend(opts)
-
-    cmd.append(db)
-    cmd.extend(pkgs)
-
-    return cmd
-
-
-def repo_add(operation, db, *pkgs, opts=None):
-    """Run repo-add.
+# TODO generalize this function
+def db_modify(operation, db, *args):
+    """Run either repo-add or repo-remove.
 
     Since both the repo-add and repo-remove scripts have the
     same command-line usage, it is simpler to generalize both
@@ -65,34 +27,47 @@ def repo_add(operation, db, *pkgs, opts=None):
     :type operation: str
     :param db: the database file to operate on
     :type db: str, bytes, or path-like object
-    :param opts: extra options to pass to repo-add
-    :type opts: list
-    :param pkgs: these arguments depend on whether the operation is
-        an add or remove.
-        If operation is 'add', then pkgs is all of the paths of the
-        package files to add to the database. If operation is 'remove',
-        then pkgs is the name of the packages to remove from the database.
-    :type pkgs: any iterable
+    :param args: These arguments include two things:
+        * Extra options to pass to repo-add
+        * Package names
+          Package names can further be divided into two types depending
+          on the operation. Adding requires that the paths to the package
+          files are passed. Removing requires that the names of the packages
+          are passed.
+    :type args: str
     :raises: RepoAddError if repo-add failed
-    :raises: ValueError if an invalid operation was requested
+    :raises: ValueError if an invalid operation was specified
     """
     if operation == 'add':
         syslog.info('Adding packages to database')
-    else:
+    elif operation == 'remove':
         syslog.info('Removing packages from database')
+    else:
+        raise ValueError(f"Invalid operation specified: {operation}")
 
     syslog.debug(f"Database: {db}")
-    syslog.debug(f"Options: {opts}")
-    syslog.debug(f"Packages: {pkgs}")
+    syslog.debug(f"Arguments: {args}")
 
     try:
-        cmd = gen_cmdline(operation, db, opts, *pkgs)
-        process = subprocess.run(cmd,
-                                 check=True,
-                                 capture_output=True,
-                                 text=True)
+        process = _run_script(operation, *args)
     except subprocess.CalledProcessError:
         raise RepoAddError(process.stderr)
     else:
         syslog.debug(process.stdout)
         syslog.info('Database operation complete')
+
+
+def _run_script(operation, *args):
+    """Run either the repo-add or the repo-remove script.
+
+    :param operation: run either repo-add or repo-remove; can be either
+        'add' or 'remove'
+    :type operation: str
+    :param args: arguments to pass to repo-add script; can be both
+        options and packages
+    :type args: str
+    """
+    return subprocess.run((f"repo-{operation}", *args),
+                          check=True,
+                          capture_output=True,
+                          text=True)

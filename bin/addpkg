@@ -104,13 +104,10 @@ if __name__ == '__main__':
         exit(E_NOFILESERR)
 
     try:
-        repos.repo_add('add', db, *pkg_tarballs, opts=opts)
+        repos.db_modify('add', db, *opts, *pkg_tarballs)
     except repos.RepoAddError as e:
         syslog.error(e)
         exit(E_REPO_ADDERR)
 
-    for pkg_tarball in pkg_tarballs:
-        add_pkgfile(pkg_tarball, cachedir)
-
-    for sigfile in sigfiles:
-        add_pkgfile(sigfile, cachedir)
+    for pkgfile in (*pkg_tarballs, *sigfiles):
+        add_pkgfile(pkgfile, cachedir)

@@ -89,13 +89,10 @@ if __name__ == '__main__':
                                          directory=cachedir,
                                          signatures_only=True)
 
-        for pkg_tarball in pkg_tarballs:
-            del_pkgfile(pkg_tarball)
+        for pkgfile in (*pkg_tarballs, *sigfiles):
+            del_pkgfile(pkgfile)
 
-        for sigfile in sigfiles:
-            del_pkgfile(sigfile)
-
-        try:
-            repos.repo_add('remove', db, pkg, opts=opts)
-        except repos.RepoAddError as e:
-            syslog.error(e)
+    try:
+        repos.db_modify('remove', db, *opts, *pkgs)
+    except repos.RepoAddError as e:
+        syslog.error(e)
