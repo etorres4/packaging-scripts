@@ -17,7 +17,6 @@ import packaging_scripts.pkgfiles as pkgfiles
 import packaging_scripts.repos as repos
 
 # ========== Constants ==========
-REPO_REMOVE_CMD = '/usr/bin/repo-remove'
 DB_EXT = 'db.tar.xz'
 
 # ========== Exit codes ==========
@@ -75,10 +74,10 @@ if __name__ == '__main__':
     pkgs = args.packages
     opts = args.opts
 
-    cachedir = f"/var/cache/pacman/{repo}"
+    cachedir = os.path.join('/var', 'cache', 'pacman', repo)
     # this assumes that the db file for the repo
     # has the same name as that repo
-    db = f"{cachedir}/{repo}.{DB_EXT}"
+    db = os.path.join(cachedir, f"repo.{DB_EXT}")
 
     if args.verbose:
         stdout_handler.setLevel(logging.DEBUG)

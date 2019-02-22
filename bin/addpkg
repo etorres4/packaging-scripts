@@ -18,7 +18,6 @@ import packaging_scripts.pkgfiles as pkgfiles
 import packaging_scripts.repos as repos
 
 # ========== Constants ==========
-REPO_ADD_CMD = '/usr/bin/repo-add'
 DB_EXT = 'db.tar.xz'
 LOGFORMAT = '==> %(levelname)s %(message)s'
 
@@ -81,10 +80,10 @@ if __name__ == '__main__':
     pkgs = args.packages
     opts = args.opts
 
-    cachedir = f"/var/cache/pacman/{repo}"
+    cachedir = os.path.join('/var', 'cache', 'pacman', repo)
     # this assumes that the db file for the repo
     # has the same name as that repo
-    db = f"{cachedir}/{repo}.{DB_EXT}"
+    db = os.path.join(cachedir, f"repo.{DB_EXT}")
 
     if args.verbose:
         stdout_handler.setLevel(logging.DEBUG)
@@ -93,8 +92,8 @@ if __name__ == '__main__':
         pkg_tarballs = pkgs
         sigfiles = []
     else:
-        pkg_tarballs = list(pkgfiles.get_pkgfiles())
-        sigfiles = list(pkgfiles.get_pkgfiles(signatures_only=True))
+        pkg_tarballs = pkgfiles.get_pkgfiles()
+        sigfiles = pkgfiles.get_pkgfiles(signatures_only=True)
 
     if not pkg_tarballs:
         syslog.critical('No package tarballs have been found, exiting')
