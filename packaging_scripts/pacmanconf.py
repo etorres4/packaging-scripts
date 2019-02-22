@@ -35,9 +35,6 @@ def list_configured_repos():
     :returns: all repos configured on the system
     :rtype: list
     """
-    if not PACMAN_CONF.is_file():
-        raise FileNotFoundError(f"{PACMAN_CONF} was not found")
-
     parsed_config = parse_configfile(PACMAN_CONF)
 
     repos = parsed_config.sections()
