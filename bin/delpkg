@@ -72,7 +72,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
     repo = args.repository
     pkgs = args.packages
-    opts = args.opts
+
+    if args.opts is None:
+        opts = []
+    else:
+        opts = args.opts
 
     cachedir = os.path.join('/var', 'cache', 'pacman', repo)
     # this assumes that the db file for the repo
