@@ -81,7 +81,7 @@ if __name__ == '__main__':
     cachedir = os.path.join('/var', 'cache', 'pacman', repo)
     # this assumes that the db file for the repo
     # has the same name as that repo
-    db = os.path.join(cachedir, f"repo.{DB_EXT}")
+    db = os.path.join(cachedir, f"{repo}.{DB_EXT}")
 
     if args.verbose:
         stdout_handler.setLevel(logging.DEBUG)

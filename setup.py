@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="packaging_scripts",
-    version="1.0.1",
+    version="1.0.2",
     author="Eric Russel Torres",
     author_email="erictorres4@protonmail.com",
     description="A set of helpers for automating borg interaction",
