@@ -1,7 +1,6 @@
 #compdef addpkg
 
 # zsh completions for 'addpkg'
-# automatically generated with http://github.com/RobSis/zsh-completion-generator
 local arguments
 
 arguments=(

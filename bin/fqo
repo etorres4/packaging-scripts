@@ -12,12 +12,12 @@ import subprocess
 
 # ========== Constants ==========
 # Commands
-PACMAN_CMD = '/usr/bin/pacman'
-FZF_CMD = '/usr/bin/fzf'
-FZF_OPTS = ['--read0', '--select-1', '--exit-0', '--print0']
-LOCATE_CMD = '/usr/bin/locate'
-LOCATE_OPTS = ['--all', '--ignore-case', '--null']
-LOCALE = 'utf-8'
+PACMAN_CMD = "/usr/bin/pacman"
+FZF_CMD = "/usr/bin/fzf"
+FZF_OPTS = ["--read0", "--select-1", "--exit-0", "--print0"]
+LOCATE_CMD = "/usr/bin/locate"
+LOCATE_OPTS = ["--all", "--ignore-case", "--null"]
+LOCALE = "utf-8"
 
 
 # ========== Functions ==========
@@ -29,11 +29,11 @@ def run_fzf(files):
     :returns: selected file
     :rtype: str
     """
-    selected_file = subprocess.run([FZF_CMD] + FZF_OPTS,
-                                   input=files,
-                                   stdout=subprocess.PIPE).stdout
+    selected_file = subprocess.run(
+        [FZF_CMD] + FZF_OPTS, input=files, stdout=subprocess.PIPE
+    ).stdout
 
-    return selected_file.decode(LOCALE).strip('\x00')
+    return selected_file.decode(LOCALE).strip("\x00")
 
 
 def locate_files(patterns):
@@ -52,13 +52,11 @@ def locate_files(patterns):
 
 # ========== Main Script ==========
 parser = argparse.ArgumentParser()
-parser.add_argument('patterns',
-                    nargs='+',
-                    help='file pattern to search for')
+parser.add_argument("patterns", nargs="+", help="file pattern to search for")
 
 args = parser.parse_args()
 
 files = locate_files(args.patterns)
 selected_file = run_fzf(files)
 
-subprocess.run([PACMAN_CMD, '-Qo', selected_file])
+subprocess.run([PACMAN_CMD, "-Qo", selected_file])

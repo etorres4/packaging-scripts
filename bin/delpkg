@@ -17,14 +17,14 @@ import packaging_scripts.pkgfiles as pkgfiles
 import packaging_scripts.repos as repos
 
 # ========== Constants ==========
-DB_EXT = 'db.tar.xz'
+DB_EXT = "db.tar.xz"
 
 # ========== Exit codes ==========
 E_REPO_REMOVEERR = 2
 
 # ========== Logging setup ==========
-console_formatter = logging.Formatter('==> %(levelname)s %(message)s')
-syslog = logging.getLogger('packaging_scripts')
+console_formatter = logging.Formatter("==> %(levelname)s %(message)s")
+syslog = logging.getLogger("packaging_scripts")
 syslog.setLevel(logging.DEBUG)
 
 stdout_handler = logging.StreamHandler(sys.stdout)
@@ -51,23 +51,26 @@ def del_pkgfile(pkg):
     syslog.info(f"Removed {pkg}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-s', '--sign',
-                        dest='opts',
-                        action='append_const',
-                        const='--sign',
-                        help='sign repository file')
-    parser.add_argument('-v', '--verbose',
-                        action='store_true',
-                        help='increase script verbosity')
-    parser.add_argument('repository',
-                        choices=pacmanconf.list_configured_repos(),
-                        help='the repository to operate on',
-                        metavar='repo')
-    parser.add_argument('packages',
-                        nargs='+',
-                        help='packages to remove')
+    parser.add_argument(
+        "-s",
+        "--sign",
+        dest="opts",
+        action="append_const",
+        const="--sign",
+        help="sign repository file",
+    )
+    parser.add_argument(
+        "-v", "--verbose", action="store_true", help="increase script verbosity"
+    )
+    parser.add_argument(
+        "repository",
+        choices=pacmanconf.list_configured_repos(),
+        help="the repository to operate on",
+        metavar="repo",
+    )
+    parser.add_argument("packages", nargs="+", help="packages to remove")
 
     args = parser.parse_args()
     repo = args.repository
@@ -78,7 +81,7 @@ if __name__ == '__main__':
     else:
         opts = args.opts
 
-    cachedir = os.path.join('/var', 'cache', 'pacman', repo)
+    cachedir = os.path.join("/var", "cache", "pacman", repo)
     # this assumes that the db file for the repo
     # has the same name as that repo
     db = os.path.join(cachedir, f"{repo}.{DB_EXT}")
@@ -87,16 +90,15 @@ if __name__ == '__main__':
         stdout_handler.setLevel(logging.DEBUG)
 
     for pkg in pkgs:
-        pkg_tarballs = pkgfiles.get_pkgfiles(query=pkg,
-                                             directory=cachedir)
-        sigfiles = pkgfiles.get_pkgfiles(query=pkg,
-                                         directory=cachedir,
-                                         signatures_only=True)
+        pkg_tarballs = pkgfiles.get_pkgfiles(query=pkg, directory=cachedir)
+        sigfiles = pkgfiles.get_pkgfiles(
+            query=pkg, directory=cachedir, signatures_only=True
+        )
 
         for pkgfile in (*pkg_tarballs, *sigfiles):
             del_pkgfile(pkgfile)
 
     try:
-        repos.db_modify('remove', db, *opts, *pkgs)
+        repos.db_modify("remove", db, *opts, *pkgs)
     except repos.RepoAddError as e:
         syslog.error(e)

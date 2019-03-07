@@ -5,7 +5,7 @@ import os
 import os.path
 
 # ========== Constants ==========
-PKGEXT = 'pkg.tar.xz'
+PKGEXT = "pkg.tar.xz"
 SIGEXT = f"{PKGEXT}.sig"
 
 

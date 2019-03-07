@@ -18,8 +18,8 @@ import packaging_scripts.pkgfiles as pkgfiles
 import packaging_scripts.repos as repos
 
 # ========== Constants ==========
-DB_EXT = 'db.tar.xz'
-LOGFORMAT = '==> %(levelname)s %(message)s'
+DB_EXT = "db.tar.xz"
+LOGFORMAT = "==> %(levelname)s %(message)s"
 
 # ========== Exit codes ==========
 E_NOFILESERR = 1
@@ -27,7 +27,7 @@ E_REPO_ADDERR = 2
 
 # ========== Logging setup ==========
 console_formatter = logging.Formatter(LOGFORMAT)
-syslog = logging.getLogger('packaging_scripts')
+syslog = logging.getLogger("packaging_scripts")
 syslog.setLevel(logging.DEBUG)
 
 stdout_handler = logging.StreamHandler(sys.stdout)
@@ -56,24 +56,26 @@ def add_pkgfile(pkgfile, cachedir):
     shutil.move(pkgfile, os.path.join(cachedir, os.path.basename(pkgfile)))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-s', '--sign',
-                        dest='opts',
-                        action='append_const',
-                        const='--sign',
-                        help='sign repository file')
-    parser.add_argument('-v', '--verbose',
-                        action='store_true',
-                        help='increase script verbosity')
-    parser.add_argument('repository',
-                        choices=pacmanconf.list_configured_repos(),
-                        help='the repository to operate on',
-                        metavar='repo')
-    parser.add_argument('packages',
-                        default=None,
-                        nargs='*',
-                        help='packages to add')
+    parser.add_argument(
+        "-s",
+        "--sign",
+        dest="opts",
+        action="append_const",
+        const="--sign",
+        help="sign repository file",
+    )
+    parser.add_argument(
+        "-v", "--verbose", action="store_true", help="increase script verbosity"
+    )
+    parser.add_argument(
+        "repository",
+        choices=pacmanconf.list_configured_repos(),
+        help="the repository to operate on",
+        metavar="repo",
+    )
+    parser.add_argument("packages", default=None, nargs="*", help="packages to add")
 
     args = parser.parse_args()
     repo = args.repository
@@ -84,7 +86,7 @@ if __name__ == '__main__':
     else:
         opts = args.opts
 
-    cachedir = os.path.join('/var', 'cache', 'pacman', repo)
+    cachedir = os.path.join("/var", "cache", "pacman", repo)
     # this assumes that the db file for the repo
     # has the same name as that repo
     db = os.path.join(cachedir, f"{repo}.{DB_EXT}")
@@ -100,11 +102,11 @@ if __name__ == '__main__':
         sigfiles = pkgfiles.get_pkgfiles(signatures_only=True)
 
     if not pkg_tarballs:
-        syslog.critical('No package tarballs have been found, exiting')
+        syslog.critical("No package tarballs have been found, exiting")
         exit(E_NOFILESERR)
 
     try:
-        repos.db_modify('add', db, *opts, *pkg_tarballs)
+        repos.db_modify("add", db, *opts, *pkg_tarballs)
     except repos.RepoAddError as e:
         syslog.error(e)
         exit(E_REPO_ADDERR)

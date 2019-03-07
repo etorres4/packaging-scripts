@@ -37,10 +37,10 @@ def db_modify(operation, db, *args):
     :raises: RepoAddError if repo-add failed
     :raises: ValueError if an invalid operation was specified
     """
-    if operation == 'add':
-        syslog.info('Adding packages to database')
-    elif operation == 'remove':
-        syslog.info('Removing packages from database')
+    if operation == "add":
+        syslog.info("Adding packages to database")
+    elif operation == "remove":
+        syslog.info("Removing packages from database")
     else:
         raise ValueError(f"Invalid operation specified: {operation}")
 
@@ -53,7 +53,7 @@ def db_modify(operation, db, *args):
         raise RepoAddError(e)
     else:
         syslog.debug(process.stdout)
-        syslog.info('Database operation complete')
+        syslog.info("Database operation complete")
 
 
 def _run_script(operation, *args):
@@ -66,7 +66,6 @@ def _run_script(operation, *args):
         options and packages
     :type args: str
     """
-    return subprocess.run((f"repo-{operation}", *args),
-                          check=True,
-                          capture_output=True,
-                          text=True)
+    return subprocess.run(
+        (f"repo-{operation}", *args), check=True, capture_output=True, text=True
+    )

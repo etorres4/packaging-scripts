@@ -4,7 +4,7 @@ import configparser
 import pathlib
 
 # ========== Constants ==========
-PACMAN_CONF = pathlib.Path('/etc/pacman.conf')
+PACMAN_CONF = pathlib.Path("/etc/pacman.conf")
 
 
 # ========== Functions ==========
@@ -21,8 +21,7 @@ def parse_configfile(filepath):
     if not pathlib.Path(filepath).is_file():
         raise FileNotFoundError(f"{filepath} does not exist")
 
-    config_reader = configparser.ConfigParser(strict=False,
-                                              allow_no_value=True)
+    config_reader = configparser.ConfigParser(strict=False, allow_no_value=True)
     config_reader.read(filepath)
 
     return config_reader
