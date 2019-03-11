@@ -1,6 +1,6 @@
 # Maintainer: Eric Torres <erictorres4@protonmail.com>
 pkgname=packaging-scripts
-pkgver=1.1.1
+pkgver=1.1.2
 pkgrel=1
 pkgdesc="A set of helper scripts for handling Arch Linux packages"
 arch=('any')

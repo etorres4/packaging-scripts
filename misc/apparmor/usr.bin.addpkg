@@ -2,16 +2,20 @@
 
 /usr/bin/addpkg {
   #include <abstractions/base>
-  #include <abstractions/bash>
   #include <abstractions/python>
 
+  /usr/bin/addpkg mrix,
   /usr/bin/repo-add Ux,
 
   /etc/pacman.conf r,
   /etc/pacman.d/ r,
   /etc/pacman.d/** r,
-  /home/*/{Packages,Projects} r,
-  /home/*/{Packages,Projects}/** rw,
   /var/cache/pacman/ r,
   /var/cache/pacman/** rw,
+
+  # Home permissions are really touchy
+  # Since PKGBUILD files exist only on
+  # the top level of each package anyways
+  /home/*/{Packages,Projects} r,
+  /home/*/{Packages,Projects}/** rw,
 }
