@@ -1,3 +1,6 @@
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/ambv/black
+
 Packaging Scripts
 =================
 
@@ -5,7 +8,7 @@ The Scripts
 -----------
 * addpkg - add a package to a repository and then automatically move its package tarfiles to that repository's respective cache directory
 * delpkg - remove a package from a repository by manipulating the db file, and then remove that respective package's tarballs in that repository's directory
-* fqo ("Fuzzy pacman -Qo") - using fzf and mlocate, select a file and then pass that file to $(pacman -Qo)
+* fqo ("fuzzy pacman -Qo") - using fzf and mlocate, select a file and then pass that file to $(pacman -Qo)
 
 addpkg
 ------
