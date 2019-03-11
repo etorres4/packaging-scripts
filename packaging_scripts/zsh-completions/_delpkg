@@ -6,6 +6,8 @@ local arguments
 
 arguments=(
   {-h,--help}'[show this help message and exit]'
+  {-c,--cachedir}'[alternative directory to use for deleting package]'
+  {-d,--db-filename}'[alternative filename for database without extension]'
   {-s,--sign}'[sign repository file]'
   {-v,--verbose}'[increase script verbosity]'
   '*:filename:_files'
