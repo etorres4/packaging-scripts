@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="packaging_scripts",
-    version="1.0.2",
+    version="1.0.3",
     author="Eric Russel Torres",
     author_email="erictorres4@protonmail.com",
     description="A set of helpers for automating borg interaction",
@@ -16,7 +16,7 @@ setuptools.setup(
     scripts=['bin/addpkg', 'bin/delpkg', 'bin/fqo'],
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: GPL3 License",
+        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
 )
