@@ -1,6 +1,6 @@
 # Maintainer: Eric Torres <erictorres4@protonmail.com>
 pkgname=packaging-scripts
-pkgver=1.1
+pkgver=1.1.1
 pkgrel=1
 pkgdesc="A set of helper scripts for handling Arch Linux packages"
 arch=('any')
@@ -10,6 +10,7 @@ depends=('pacman' 'python')
 makedepends=('git' 'python-setuptools')
 optdepends=('fzf: for the fqo script'
             'mlocate: for the fqo script')
+backup=(etc/apparmor.d/usr.bin.{addpkg,delpkg})
 source=("git+file:///home/etorres/Projects/packaging-scripts")
 sha256sums=('SKIP')
 sha512sums=('SKIP')
@@ -26,6 +27,11 @@ package() {
 
     # install README
     install -Dm644 README.rst "${pkgdir}/usr/share/doc/${pkgname}/README.rst"
+
+    # install AppArmor profiles
+    for profile in misc/apparmor/*; do
+        install -Dm644 "${profile}" "${pkgdir}/etc/apparmor.d/${profile##*/}"
+    done
 
     # install zsh completions
     install -d "${pkgdir}/usr/share/zsh/site-functions"

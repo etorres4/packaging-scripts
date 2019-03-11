@@ -1,0 +1,17 @@
+#include <tunables/global>
+
+/usr/bin/addpkg {
+  #include <abstractions/base>
+  #include <abstractions/bash>
+  #include <abstractions/python>
+
+  /usr/bin/repo-add Ux,
+
+  /etc/pacman.conf r,
+  /etc/pacman.d/ r,
+  /etc/pacman.d/** r,
+  /home/*/{Packages,Projects} r,
+  /home/*/{Packages,Projects}/** rw,
+  /var/cache/pacman/ r,
+  /var/cache/pacman/** rw,
+}
