@@ -59,14 +59,12 @@ def add_pkgfile(pkgfile, cachedir):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-c",
-        "--cachedir",
-        help="alternative directory to use for moving package"
+        "-c", "--cachedir", help="alternative directory to use for moving package"
     )
     parser.add_argument(
         "-d",
         "--db-filename",
-        help="alternative filename for database without extension"
+        help="alternative filename for database without extension",
     )
     parser.add_argument(
         "-s",
@@ -101,8 +99,8 @@ if __name__ == "__main__":
     else:
         cachedir = os.path.join("/var", "cache", "pacman", repo)
 
-    if args.db-filename is not None:
-        db = os.path.join(cachedir, f"{args.db-filename}.{DB_EXT}")
+    if args.db_filename is not None:
+        db = os.path.join(cachedir, f"{args.db_filename}.{DB_EXT}")
     else:
         db = os.path.join(cachedir, f"{repo}.{DB_EXT}")
 
