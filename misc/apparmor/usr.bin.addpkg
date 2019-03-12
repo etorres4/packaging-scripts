@@ -16,6 +16,8 @@
   # Home permissions are really touchy
   # Since PKGBUILD files exist only on
   # the top level of each package anyways
-  /home/*/{Packages,Projects} r,
-  /home/*/{Packages,Projects}/** rw,
+  owner /home/*/{Packages,Projects} r,
+  owner /home/*/{Packages,Projects}/** rw,
+  owner /home/*/.cache/aurutils/* r,
+  owner /home/*/.cache/aurutils/** rw,
 }
