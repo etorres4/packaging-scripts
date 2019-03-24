@@ -10,7 +10,7 @@ SIGEXT = f"{PKGEXT}.sig"
 
 
 # ========== Functions ==========
-def get_pkgfiles(query=None, directory=None, signatures_only=False):
+def get_pkgfiles(query=None, directory=None, *, signatures_only=False):
     """Return a list of package files in the current working directory.
 
     :param query: names of package files to search for
