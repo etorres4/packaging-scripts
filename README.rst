@@ -11,16 +11,16 @@ The Scripts
 * fqo ("fuzzy pacman -Qo") - using fzf and mlocate, select a file and then pass that file to $(pacman -Qo)
 
 addpkg
-------
+^^^^^^
 * Either take all pacman package files in the current working directory or from the command line and add them to the given repository
 * Automatically move said package files to the repository's cache directory
 
 delpkg
-------
+^^^^^^
 * Take the names of packages and a repository, then delete those packages from said repository
 * Automatically delete all tarfiles of those packages from the repository
 
 fqo
----
+^^^
 * Given a query, pass to locate and then pass the results to fzf
 * Select a file and then pass that file to pacman -Qo
