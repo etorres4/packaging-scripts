@@ -62,6 +62,11 @@ if __name__ == "__main__":
         help="alternative filename for database without extension",
     )
     parser.add_argument(
+        "--files-only",
+        action="store_true",
+        help="only add the built files to the repository",
+    )
+    parser.add_argument(
         "-s",
         "--sign",
         dest="opts",
@@ -111,7 +116,8 @@ if __name__ == "__main__":
         for pkgfile in (*pkg_tarballs, *sigfiles):
             del_pkgfile(pkgfile)
 
-    try:
-        repos.db_modify("remove", db, *opts, *pkgs)
-    except repos.RepoAddError as e:
-        syslog.error(e)
+    if not args.files_only:
+        try:
+            repos.db_modify("remove", db, *opts, *pkgs)
+        except repos.RepoAddError as e:
+            syslog.error(e)

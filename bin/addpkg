@@ -67,6 +67,11 @@ if __name__ == "__main__":
         help="alternative filename for database without extension",
     )
     parser.add_argument(
+        "--files-only",
+        action="store_true",
+        help="only add the built files to the repository",
+    )
+    parser.add_argument(
         "-s",
         "--sign",
         dest="opts",
@@ -118,11 +123,12 @@ if __name__ == "__main__":
         syslog.critical("No package tarballs have been found, exiting")
         exit(E_NOFILESERR)
 
-    try:
-        repos.db_modify("add", db, *opts, *pkg_tarballs)
-    except repos.RepoAddError as e:
-        syslog.error(e)
-        exit(E_REPO_ADDERR)
+    if not args.files_only:
+        try:
+            repos.db_modify("add", db, *opts, *pkg_tarballs)
+        except repos.RepoAddError as e:
+            syslog.error(e)
+            exit(E_REPO_ADDERR)
 
     for pkgfile in (*pkg_tarballs, *sigfiles):
         add_pkgfile(pkgfile, cachedir)
