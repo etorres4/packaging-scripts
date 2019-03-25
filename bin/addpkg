@@ -3,13 +3,12 @@
 
 Functions:
 ==========
-* add_pkgfiles(cachedir, pkgs)
+* adds(cachedir, pkgs)
 * repo_add(db, pkgs, opts=None)
 """
 
 import argparse
 import logging
-import shutil
 import sys
 
 import packaging_scripts.pacmanconf as pacmanconf
@@ -22,7 +21,7 @@ from pathlib import Path
 DB_EXT = "db.tar.xz"
 LOGFORMAT = "==> %(levelname)s %(message)s"
 
-# ========== Exit codes ==========
+# ----- Exit codes -----
 E_NOFILESERR = 1
 E_REPO_ADDERR = 2
 
@@ -84,8 +83,16 @@ if __name__ == "__main__":
     pkgs = args.packages
 
     opts = [] if args.opts is None else args.opts
-    cachedir = Path(args.cachedir) if args.cachedir else Path('/var') / "cache" / "pacman" / repo
-    db = cachedir / f"{args.db_filename}.{DB_EXT}" if args.db_filename else cachedir / f"{repo}.{DB_EXT}"
+    cachedir = (
+        Path(args.cachedir)
+        if args.cachedir
+        else Path("/var") / "cache" / "pacman" / repo
+    )
+    db = (
+        cachedir / f"{args.db_filename}.{DB_EXT}"
+        if args.db_filename
+        else cachedir / f"{repo}.{DB_EXT}"
+    )
 
     if args.verbose:
         stdout_handler.setLevel(logging.DEBUG)
@@ -94,8 +101,8 @@ if __name__ == "__main__":
         pkg_tarballs = pkgs
         sigfiles = []
     else:
-        pkg_tarballs = pkgfiles.get_pkgfiles()
-        sigfiles = pkgfiles.get_pkgfiles(signatures_only=True)
+        pkg_tarballs = list(pkgfiles.get())
+        sigfiles = pkgfiles.get(signatures_only=True)
 
     if not pkg_tarballs:
         syslog.critical("No package tarballs have been found, exiting")
@@ -109,4 +116,4 @@ if __name__ == "__main__":
             exit(E_REPO_ADDERR)
 
     for pkgfile in (*pkg_tarballs, *sigfiles):
-        pkgfiles.add_pkgfile(pkgfile, cachedir)
+        pkgfiles.add(pkgfile, cachedir)
