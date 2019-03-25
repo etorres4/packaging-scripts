@@ -8,9 +8,9 @@ from pathlib import Path
 
 # ========== Constants ==========
 # Match any pkgfile of any name with the .pkg.tar.* extension
-PKGREGEX = r"^\w+[.]pkg[.]tar([.]\w+)?$"
+PKGREGEX = r"^[\w.+/-]+\.pkg\.tar(\.\w+)?$"
 # Match any sigfile of any name with the .pkg.tar.*.sig extension
-SIGREGEX = r"^\w+[.]pkg[.]tar([.]\w+)?[.]sig$"
+SIGREGEX = r"^[\w.+/-]+\.pkg\.tar(\.\w+)?\.sig$"
 
 
 # ========== Logging Setup ===========
@@ -30,7 +30,7 @@ def get(query=None, *, directory=None, signatures_only=False):
     :yields: paths of package files
     """
     path = Path.cwd() if directory is None else Path(directory)
-    filequery = f"*{query}*" if query is not None else "*"
+    filequery = f"*{query}*" if query else "*"
 
     if signatures_only:
         yield from _filter_by_regex(filequery, SIGREGEX, path)
