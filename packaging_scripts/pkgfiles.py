@@ -27,8 +27,7 @@ def get(query=None, *, directory=None, signatures_only=False):
     :type directory: str or path-like object
     :param signatures_only: include only signature files
     :type signatures_only: bool
-    :returns: paths of package files
-    :rtype: list
+    :yields: paths of package files
     """
     path = Path.cwd() if directory is None else Path(directory)
     filequery = f"*{query}*" if query is not None else "*"
@@ -40,7 +39,7 @@ def get(query=None, *, directory=None, signatures_only=False):
 
 
 def add(pkgfile, cachedir):
-    """Add package file to the repository directory.
+    """Add package file to the repository cache directory.
 
     :param pkg: path of package to add
     :type pkg: path-like object
@@ -62,7 +61,7 @@ def delete(pkg):
 
 
 def _filter_by_regex(query, regex_expression, path):
-    """Filter package files only.
+    """Filter by regular expression.
 
     :param query: names of package files to search for
     :type query: str
