@@ -10,9 +10,9 @@ from unittest.mock import MagicMock, patch
 # ========== Constants ==========
 TESTING_MODULE = f"packaging_scripts.pkgfiles"
 # Match any pkgfile of any name with the .pkg.tar.* extension
-PKGREGEX = r"^\w+[.]pkg[.]tar([.]\w+)?$"
+PKGREGEX = r"^[\w.+/-]+\.pkg\.tar(\.\w+)?$"
 # Match any sigfile of any name with the .pkg.tar.*.sig extension
-SIGREGEX = r"^\w+[.]pkg[.]tar([.]\w+)?[.]sig$"
+SIGREGEX = r"^[\w.+/-]+\.pkg\.tar(\.\w+)?\.sig$"
 
 ALL_PKGFILES = [
     Path("pkg1.pkg.tar.xz"),
