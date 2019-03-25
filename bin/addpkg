@@ -9,13 +9,14 @@ Functions:
 
 import argparse
 import logging
-import os.path
 import shutil
 import sys
 
 import packaging_scripts.pacmanconf as pacmanconf
 import packaging_scripts.pkgfiles as pkgfiles
 import packaging_scripts.repos as repos
+
+from pathlib import Path
 
 # ========== Constants ==========
 DB_EXT = "db.tar.xz"
@@ -43,19 +44,7 @@ syslog.addHandler(stdout_handler)
 syslog.addHandler(stderr_handler)
 
 
-# ========== Functions ==========
-def add_pkgfile(pkgfile, cachedir):
-    """Add package file to the repository directory.
-
-    :param pkg: path of package to add
-    :type pkg: str, bytes, or path-like object
-    :param cachedir: cache directory to move package to
-    :type cachedir: str, bytes, or path-like object
-    """
-    syslog.info(f"Adding {pkgfile} to {cachedir}")
-    shutil.move(pkgfile, os.path.join(cachedir, os.path.basename(pkgfile)))
-
-
+# ========== Main Script ==========
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -94,20 +83,9 @@ if __name__ == "__main__":
     repo = args.repository
     pkgs = args.packages
 
-    if args.opts is None:
-        opts = []
-    else:
-        opts = args.opts
-
-    if args.cachedir is not None:
-        cachedir = args.cachedir
-    else:
-        cachedir = os.path.join("/var", "cache", "pacman", repo)
-
-    if args.db_filename is not None:
-        db = os.path.join(cachedir, f"{args.db_filename}.{DB_EXT}")
-    else:
-        db = os.path.join(cachedir, f"{repo}.{DB_EXT}")
+    opts = [] if args.opts is None else args.opts
+    cachedir = Path(args.cachedir) if args.cachedir else Path('/var') / "cache" / "pacman" / repo
+    db = cachedir / f"{args.db_filename}.{DB_EXT}" if args.db_filename else cachedir / f"{repo}.{DB_EXT}"
 
     if args.verbose:
         stdout_handler.setLevel(logging.DEBUG)
@@ -131,4 +109,4 @@ if __name__ == "__main__":
             exit(E_REPO_ADDERR)
 
     for pkgfile in (*pkg_tarballs, *sigfiles):
-        add_pkgfile(pkgfile, cachedir)
+        pkgfiles.add_pkgfile(pkgfile, cachedir)
