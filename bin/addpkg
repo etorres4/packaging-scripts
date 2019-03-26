@@ -80,7 +80,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     repo = args.repository
-    pkgs = args.packages
 
     opts = [] if args.opts is None else args.opts
     cachedir = (
@@ -97,12 +96,12 @@ if __name__ == "__main__":
     if args.verbose:
         stdout_handler.setLevel(logging.DEBUG)
 
-    if pkgs:
-        pkg_tarballs = pkgs
+    if args.packages:
+        pkg_tarballs = args.packages
         sigfiles = []
     else:
         pkg_tarballs = list(pkgfiles.get())
-        sigfiles = pkgfiles.get(signatures_only=True)
+        sigfiles = list(pkgfiles.get(signatures_only=True))
 
     if not pkg_tarballs:
         syslog.critical("No package tarballs have been found, exiting")
