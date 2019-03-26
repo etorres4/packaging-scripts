@@ -36,7 +36,7 @@ def filter_files(query):
 
 
 # ========== Unit Tests ==========
-class TestFilterPkgfiles(unittest.TestCase):
+class TestGetPkgfiles(unittest.TestCase):
     def setUp(self):
         self.patched_path = patch.object(Path, "glob")
         self.mocked_glob = self.patched_path.start()
@@ -63,7 +63,7 @@ class TestFilterPkgfiles(unittest.TestCase):
         self.patched_path.stop()
 
 
-class TestFilterSigfiles(unittest.TestCase):
+class TestGetSigfiles(unittest.TestCase):
     def setUp(self):
         self.patched_path = patch.object(Path, "glob")
         self.mocked_glob = self.patched_path.start()
@@ -90,6 +90,24 @@ class TestFilterSigfiles(unittest.TestCase):
         self.patched_path.stop()
 
 
+class TestFilterPkgfiles(unittest.TestCase):
+    def test_yield(self):
+        result = pkgfiles.filter(ALL_PKGFILES)
+        expected = [s for s in get_all_files() if re.match(PKGREGEX, str(s))]
+
+        self.assertListEqual(list(result), expected)
+        self.assertIsInstance(result, GeneratorType)
+
+
+class TestFilterSigfiles(unittest.TestCase):
+    def test_yield(self):
+        result = pkgfiles.filter(ALL_PKGFILES, signatures_only=True)
+        expected = [s for s in get_all_files() if re.match(SIGREGEX, str(s))]
+
+        self.assertListEqual(list(result), expected)
+        self.assertIsInstance(result, GeneratorType)
+
+
 class TestAddPkgfile(unittest.TestCase):
     def setUp(self):
         self.patched_shutil = patch(f"{TESTING_MODULE}.shutil")
@@ -109,7 +127,7 @@ class TestAddPkgfile(unittest.TestCase):
         self.patched_shutil.stop()
 
 
-class TestDeletePkgfiles(unittest.TestCase):
+class TestDeletePkgfile(unittest.TestCase):
     def setUp(self):
         self.pkgfile = MagicMock("/var/cache/repo/pkgfile", spec_set=Path)
 

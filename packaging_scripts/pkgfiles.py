@@ -19,7 +19,7 @@ syslog = logging.getLogger(__name__)
 
 # ========== Functions ==========
 def get(query=None, *, directory=None, signatures_only=False):
-    """Return a list of package files in the current working directory.
+    """Retrieve all package-related files from the filesystem.
 
     :param query: names of package files to search for
     :type query: str
@@ -33,9 +33,22 @@ def get(query=None, *, directory=None, signatures_only=False):
     filequery = f"*{query}*" if query else "*"
 
     if signatures_only:
-        yield from _filter_by_regex(filequery, SIGREGEX, path)
+        yield from _filter_by_regex(SIGREGEX, path.glob(filequery))
     else:
-        yield from _filter_by_regex(filequery, PKGREGEX, path)
+        yield from _filter_by_regex(PKGREGEX, path.glob(filequery))
+
+
+def filter(iterable, *, signatures_only=False):
+    """Retrive package file types from a predefined iterable.
+
+    :param signatures_only: include only signature files
+    :type signatures_only: bool
+    :yields: paths of package files
+    """
+    if signatures_only:
+        yield from _filter_by_regex(SIGREGEX, iterable)
+    else:
+        yield from _filter_by_regex(PKGREGEX, iterable)
 
 
 def add(pkgfile, cachedir):
@@ -60,18 +73,15 @@ def delete(pkg):
     syslog.info(f"Removed {pkg}")
 
 
-def _filter_by_regex(query, regex_expression, path):
+def _filter_by_regex(regex_expression, iterable):
     """Filter by regular expression.
 
-    :param query: names of package files to search for
-    :type query: str
     :param regex_expression: the expression to filter by
     :type regex_expression: str
-    :param path: directory to look for files
-    :type path: path-like object
-    :yields: package files from either the current working directory
-        or an arbitrary directory
+    :param iterable: iterable to filter through
+    :type iterable: does this really need explanation?
+    :yields: pathlib.Path objects to package files
     """
-    for pkgfile in path.glob(query):
-        if re.match(regex_expression, str(pkgfile)):
-            yield pkgfile
+    for item in iterable:
+        if re.match(regex_expression, str(item)):
+            yield Path(item)
