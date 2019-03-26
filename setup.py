@@ -5,14 +5,14 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="packaging_scripts",
-    version="1.2",
+    version="1.3",
     author="Eric Russel Torres",
     author_email="erictorres4@protonmail.com",
     description="A set of helpers for automating borg interaction",
     long_description=long_description,
     long_description_content_type="text/plain",
     url="",
-    packages=['packaging_scripts'],
+    packages=["packaging_scripts"],
     scripts=["bin/addpkg", "bin/delpkg", "bin/fqo"],
     classifiers=[
         "Programming Language :: Python :: 3",
