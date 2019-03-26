@@ -24,3 +24,7 @@ fqo
 ^^^
 * Given a query, pass to locate and then pass the results to fzf
 * Select a file and then pass that file to pacman -Qo
+
+Implementation Notes
+--------------------
+* All code internally uses pathlib for path handling
