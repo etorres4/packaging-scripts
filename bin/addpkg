@@ -97,8 +97,8 @@ if __name__ == "__main__":
         stdout_handler.setLevel(logging.DEBUG)
 
     if args.packages:
-        pkg_tarballs = args.packages
-        sigfiles = []
+        pkg_tarballs = pkgfiles.filter(args.packages)
+        sigfiles = pkgfiles.filter(args.packages, signatures_only=True)
     else:
         pkg_tarballs = list(pkgfiles.get())
         sigfiles = list(pkgfiles.get(signatures_only=True))
