@@ -4,3 +4,4 @@ PKGBUILD
 *.pkg.tar.xz
 *.pkg.tar.xz.sig
 *.tar.gz
+.hypothesis
