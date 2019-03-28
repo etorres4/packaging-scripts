@@ -2,6 +2,8 @@ import packaging_scripts.pkgfiles as pkgfiles
 import re
 import unittest
 
+from hypothesis import given
+from hypothesis.strategies import iterables, text
 from pathlib import Path
 from types import GeneratorType
 from unittest.mock import MagicMock, patch
@@ -14,105 +16,21 @@ PKGREGEX = r"^[\w.+/-]+\.pkg\.tar(\.\w+)?$"
 # Match any sigfile of any name with the .pkg.tar.*.sig extension
 SIGREGEX = r"^[\w.+/-]+\.pkg\.tar(\.\w+)?\.sig$"
 
-ALL_PKGFILES = [
-    Path("pkg1.pkg.tar.xz"),
-    Path("pkg1.pkg.tar.xz.sig"),
-    Path("pkg2.pkg.tar.xz"),
-    Path("pkg3.pkg.tar.xz"),
-    Path("pkg3.pkg.tar.xz.sig"),
-    Path("notapkg.sig"),
-]
-
-
-# ========== Functions ==========
-def get_all_files(*args):
-    for f in ALL_PKGFILES:
-        yield f
-
-
-def filter_files(query):
-    for f in [Path("pkg3.pkg.tar.xz"), Path("pkg3.pkg.tar.xz.sig")]:
-        yield f
-
 
 # ========== Unit Tests ==========
-class TestGetPkgfiles(unittest.TestCase):
-    def setUp(self):
-        self.patched_path = patch.object(Path, "glob")
-        self.mocked_glob = self.patched_path.start()
-
-        self.mocked_glob.side_effect = get_all_files
-
-    def test_yield_no_query(self):
-        result = pkgfiles.get()
-        expected = [s for s in get_all_files() if re.match(PKGREGEX, str(s))]
-
-        self.assertListEqual(list(result), expected)
-        self.assertIsInstance(result, GeneratorType)
-
-    def test_yield_with_query(self):
-        self.mocked_glob.side_effect = filter_files
-
-        result = pkgfiles.get("pkg3")
-        expected = [Path("pkg3.pkg.tar.xz")]
-
-        self.assertListEqual(list(result), expected)
-        self.assertIsInstance(result, GeneratorType)
-
-    def tearDown(self):
-        self.patched_path.stop()
-
-
-class TestGetSigfiles(unittest.TestCase):
-    def setUp(self):
-        self.patched_path = patch.object(Path, "glob")
-        self.mocked_glob = self.patched_path.start()
-
-        self.mocked_glob.side_effect = get_all_files
-
-    def test_yield_no_query(self):
-        result = pkgfiles.get(signatures_only=True)
-        expected = [s for s in get_all_files() if re.match(SIGREGEX, str(s))]
-
-        self.assertListEqual(list(result), expected)
-        self.assertIsInstance(result, GeneratorType)
-
-    def test_yield_with_query(self):
-        self.mocked_glob.side_effect = filter_files
-
-        result = pkgfiles.get("pkg3", signatures_only=True)
-        expected = [Path("pkg3.pkg.tar.xz.sig")]
-
-        self.assertListEqual(list(result), expected)
-        self.assertIsInstance(result, GeneratorType)
-
-    def tearDown(self):
-        self.patched_path.stop()
-
-
-class TestFilterPkgfiles(unittest.TestCase):
-    def test_yield(self):
-        result = pkgfiles.filter(ALL_PKGFILES)
-        expected = [s for s in ALL_PKGFILES if re.match(PKGREGEX, str(s))]
-        expected.sort()
+class TestFilterByRegex(unittest.TestCase):
+    @given(iterables(text()))
+    def test_pkgregex(self, i):
+        result = pkgfiles._filter_by_regex(pkgfiles.PKGREGEX, i)
+        expected = [Path(p) for p in i if re.match(PKGREGEX, str(p))]
 
         self.assertListEqual(sorted(result), expected)
         self.assertIsInstance(result, GeneratorType)
 
-    def test_yield_duplicate(self):
-        duplicate_info = ['package.pkg.tar.xz', 'package.pkg.tar.xz']
-
-        result = pkgfiles.filter(duplicate_info)
-        expected = [Path('package.pkg.tar.xz')]
-
-        self.assertListEqual(sorted(result), expected)
-        self.assertIsInstance(result, GeneratorType)
-
-
-class TestFilterSigfiles(unittest.TestCase):
-    def test_yield(self):
-        result = pkgfiles.filter(ALL_PKGFILES, signatures_only=True)
-        expected = [s for s in get_all_files() if re.match(SIGREGEX, str(s))]
+    @given(iterables(text()))
+    def test_sigregex(self, i):
+        result = pkgfiles._filter_by_regex(pkgfiles.SIGREGEX, i)
+        expected = [Path(p) for p in i if re.match(SIGREGEX, str(p))]
 
         self.assertListEqual(list(result), expected)
         self.assertIsInstance(result, GeneratorType)
@@ -123,14 +41,15 @@ class TestAddPkgfile(unittest.TestCase):
         self.patched_shutil = patch(f"{TESTING_MODULE}.shutil")
         self.mocked_shutil = self.patched_shutil.start()
 
-        self.pkgfile = Path("/home/user/pkgfile")
-        self.cachedir = Path("/var/cache/repo")
+    @given(text())
+    def test_pkgfile_path(self, p):
+        pkgfile = Path(p)
+        cachedir = Path("/var/cache/repo")
 
-    def test_pkgfile_path(self):
-        pkgfiles.add(self.pkgfile, self.cachedir)
+        pkgfiles.add(pkgfile, cachedir)
 
         self.mocked_shutil.move.assert_called_with(
-            self.pkgfile, Path("/var/cache/repo/pkgfile")
+            pkgfile, Path(f"/var/cache/repo/{pkgfile.name}")
         )
 
     def tearDown(self):
