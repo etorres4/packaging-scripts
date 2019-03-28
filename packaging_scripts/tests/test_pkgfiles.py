@@ -93,9 +93,19 @@ class TestGetSigfiles(unittest.TestCase):
 class TestFilterPkgfiles(unittest.TestCase):
     def test_yield(self):
         result = pkgfiles.filter(ALL_PKGFILES)
-        expected = [s for s in get_all_files() if re.match(PKGREGEX, str(s))]
+        expected = [s for s in ALL_PKGFILES if re.match(PKGREGEX, str(s))]
+        expected.sort()
 
-        self.assertListEqual(list(result), expected)
+        self.assertListEqual(sorted(result), expected)
+        self.assertIsInstance(result, GeneratorType)
+
+    def test_yield_duplicate(self):
+        duplicate_info = ['package.pkg.tar.xz', 'package.pkg.tar.xz']
+
+        result = pkgfiles.filter(duplicate_info)
+        expected = [Path('package.pkg.tar.xz')]
+
+        self.assertListEqual(sorted(result), expected)
         self.assertIsInstance(result, GeneratorType)
 
 
