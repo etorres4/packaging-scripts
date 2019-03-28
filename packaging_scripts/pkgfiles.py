@@ -41,14 +41,16 @@ def get(query=None, *, directory=None, signatures_only=False):
 def filter(iterable, *, signatures_only=False):
     """Retrive package file types from a predefined iterable.
 
+    :param iterable: any iterable
+    :type iterable: anything that returns str or path-like objects
     :param signatures_only: include only signature files
     :type signatures_only: bool
     :yields: paths of package files
     """
     if signatures_only:
-        yield from _filter_by_regex(SIGREGEX, iterable)
+        yield from _filter_by_regex(SIGREGEX, sorted(set(iterable)))
     else:
-        yield from _filter_by_regex(PKGREGEX, iterable)
+        yield from _filter_by_regex(PKGREGEX, sorted(set(iterable)))
 
 
 def add(pkgfile, cachedir):
@@ -79,7 +81,7 @@ def _filter_by_regex(regex_expression, iterable):
     :param regex_expression: the expression to filter by
     :type regex_expression: str
     :param iterable: iterable to filter through
-    :type iterable: does this really need explanation?
+    :type iterable: str or path-like objects
     :yields: pathlib.Path objects to package files
     """
     for item in iterable:
