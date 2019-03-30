@@ -38,8 +38,8 @@ def list_configured_repos():
     parsed_config = parse_configfile(PACMAN_CONF)
 
     repos = parsed_config.sections()
-    # remove the 'option' entry from the list
-    del repos[0]
+    # remove the 'options' entry from the list
+    del repos[repos.index("options")]
 
     repos.sort()
 
