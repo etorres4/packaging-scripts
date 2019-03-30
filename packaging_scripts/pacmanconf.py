@@ -1,10 +1,11 @@
 """Module for config file helper functions."""
 
 import configparser
-import pathlib
+
+from pathlib import Path
 
 # ========== Constants ==========
-PACMAN_CONF = pathlib.Path("/etc/pacman.conf")
+PACMAN_CONF = Path("/etc/pacman.conf")
 
 
 # ========== Functions ==========
