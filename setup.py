@@ -9,6 +9,8 @@ SCRIPTS = ["bin/addpkg", "bin/delpkg", "bin/fqo"]
 with open("README.rst", "r") as fh:
     long_description = fh.read()
 
+
+# ========== Package Setup ==========
 setuptools.setup(
     name="packaging_scripts",
     version="1.3.1",
