@@ -34,8 +34,8 @@ def db_modify(operation, db, *args):
           files are passed. Removing requires that the names of the packages
           are passed.
     :type args: str
-    :raises: RepoAddError if repo-add failed
-    :raises: ValueError if an invalid operation was specified
+    :raises RepoAddError: if repo-add failed
+    :raises ValueError: if an invalid operation was specified
     """
     if operation == "add":
         syslog.info("Adding packages to database")

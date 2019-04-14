@@ -17,7 +17,7 @@ def parse_configfile(filepath):
     :type path: str, bytes, or path-like object
     :returns: object used to parse config file
     :rtype: ConfigParser object
-    :raises: FileNotFoundError if path does not exist
+    :raises FileNotFoundError: if path does not exist
     """
     if not pathlib.Path(filepath).is_file():
         raise FileNotFoundError(f"{filepath} does not exist")
