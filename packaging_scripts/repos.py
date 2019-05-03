@@ -44,8 +44,8 @@ def db_modify(operation, db, *args):
     else:
         raise ValueError(f"Invalid operation specified: {operation}")
 
-    syslog.debug(f"Database: {db}")
-    syslog.debug(f"Arguments: {args}")
+    syslog.debug("Database: %s", db)
+    syslog.debug("Arguments: %s", args)
 
     try:
         process = _run_script(operation, str(db), *args)

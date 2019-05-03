@@ -61,7 +61,7 @@ def add(pkgfile, cachedir):
     :param cachedir: cache directory to move package to
     :type cachedir: path-like object
     """
-    syslog.info(f"Adding {pkgfile} to {cachedir}")
+    syslog.info("Adding %s to %s", pkgfile, cachedir)
     shutil.move(pkgfile, cachedir / pkgfile.name)
 
 
@@ -72,7 +72,7 @@ def delete(pkg):
     :type pkg: path-like object
     """
     pkg.unlink()
-    syslog.info(f"Removed {pkg}")
+    syslog.info("Removed %s", pkg)
 
 
 def _filter_by_regex(regex_expression, iterable):
