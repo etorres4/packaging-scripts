@@ -7,10 +7,11 @@ import shutil
 from pathlib import Path
 
 # ========== Constants ==========
+# Some versions might have a colon (:)
 # Match any pkgfile of any name with the .pkg.tar.* extension
-PKGREGEX = r"^[\w.+/-]+\.pkg\.tar(\.\w+)?$"
+PKGREGEX = r"^[\:\w.+/-]+\.pkg\.tar(\.\w+)?$"
 # Match any sigfile of any name with the .pkg.tar.*.sig extension
-SIGREGEX = r"^[\w.+/-]+\.pkg\.tar(\.\w+)?\.sig$"
+SIGREGEX = r"^[\:\w.+/-]+\.pkg\.tar(\.\w+)?\.sig$"
 
 
 # ========== Logging Setup ===========
