@@ -19,7 +19,7 @@ def parse_configfile(filepath):
     :rtype: ConfigParser object
     :raises FileNotFoundError: if path does not exist
     """
-    if not pathlib.Path(filepath).is_file():
+    if not Path(filepath).is_file():
         raise FileNotFoundError(f"{filepath} does not exist")
 
     config_reader = configparser.ConfigParser(strict=False, allow_no_value=True)

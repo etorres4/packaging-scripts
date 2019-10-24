@@ -40,7 +40,7 @@ def get(query=None, *, directory=None, signatures_only=False):
 
 
 def filter(iterable, *, signatures_only=False):
-    """Retrive package file types from a predefined iterable.
+    """Retrieve package files from a predefined iterable.
 
     :param iterable: any iterable
     :type iterable: anything that returns str or path-like objects
