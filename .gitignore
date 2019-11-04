@@ -1,6 +1,5 @@
 __pycache__
 packaging-scripts
-PKGBUILD
 *.pkg.tar.xz
 *.pkg.tar.xz.sig
 *.tar.gz
