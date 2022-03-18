@@ -9,6 +9,7 @@ The Scripts
 * addpkg - add a package to a repository and then automatically move its package tarfiles to that repository's respective cache directory
 * delpkg - remove a package from a repository by manipulating the db file, and then remove that respective package's tarballs in that repository's directory
 * fqo ("fuzzy pacman -Qo") - using fzf and mlocate, select a file and then pass that file to $(pacman -Qo)
+* pug2 - upload a gist of explicitly installed pacman packages
 
 addpkg
 ^^^^^^
@@ -24,6 +25,11 @@ fqo
 ^^^
 * Given a query, pass to locate and then pass the results to fzf
 * Select a file and then pass that file to pacman -Qo
+
+pug2
+^^^^
+* Automatically update a gist containing explicitly installed pacman packages on the system
+* Script inspired by ventto/pug
 
 Implementation Notes
 --------------------
