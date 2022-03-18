@@ -1,16 +1,16 @@
 # Maintainer: Eric Torres <erictorres4@protonmail.com>
 pkgname=packaging-scripts
-pkgver=1.5
+pkgver=1.5.1
 pkgrel=1
 pkgdesc="A set of helper scripts for handling Arch Linux packages"
 arch=('any')
 license=('MIT')
 groups=(pacman-helpers)
-depends=(pacman python pacman-contrib)
+depends=(pacman python)
 makedepends=(git python-setuptools)
 optdepends=('fzf: for the fqo script'
             'mlocate: for the fqo script')
-checkdepends=('python-hypothesis')
+checkdepends=(python-hypothesis python-pytest)
 backup=(etc/apparmor.d/usr.bin.{addpkg,delpkg}
     etc/packaging-scripts.conf)
 source=("${pkgname}::git+file:///home/etorres/Projects/packaging-scripts")
@@ -43,7 +43,7 @@ package() {
     done
 
     # install pug hook
-    install -Dm644 'misc/pug.hook' "${pkgdir}/usr/share/libalpm/hooks"
+    install -Dm644 'misc/pug.hook' "${pkgdir}/usr/share/libalpm/hooks/pug.hook"
 
     # install zsh completions
     install -d "${pkgdir}/usr/share/zsh/site-functions"

@@ -1,6 +1,13 @@
 Changelog for packaging-scripts
 ===============================
 
+Version 1.5.1
+-------------
+
+* pug2
+
+  * Add repository name to filename when uploading to gist
+
 Version 1.5
 -----------
 

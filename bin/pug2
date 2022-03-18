@@ -18,7 +18,7 @@ import packaging_scripts.pacman as pacman
 
 # ========== Constants ==========
 # Commands
-PACLIST_CMD = "/usr/bin/paclist"
+PACMAN_CMD = "/usr/bin/pacman"
 LOCALE = "utf-8"
 
 # Paths
@@ -82,14 +82,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     filename = args.filename
-    repo = args.repo
+    repo = args.repository
 
     # Run process that lists packages
-    packages = subprocess.run([PACLIST_CMD, args.repo], capture_output=True).stdout
+    packages = subprocess.run([PACMAN_CMD, "-Qqem"], capture_output=True).stdout
 
     # Write package list to file and perform upload
     with tempfile.NamedTemporaryFile() as tmpfile:
         tmpfile.write(packages)
-        # Upload file through gist
         # We use the filename in the command, not in the tempfile so gist knows what to upload as
-        # subprocess.run(['gist', '-f', args.filename, tmpfile.name])
+        subprocess.run(["gist", "-f", args.filename, tmpfile.name])
