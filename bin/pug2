@@ -73,16 +73,9 @@ if __name__ == "__main__":
         default=DEFAULT_FILENAME,
         help="alternative filename to upload as",
     )
-    parser.add_argument(
-        "repository",
-        choices=pacman.list_configured_repos(),
-        help="the repository to operate on",
-        metavar="repo",
-    )
     args = parser.parse_args()
 
     filename = args.filename
-    repo = args.repository
 
     # Run process that lists packages
     packages = subprocess.run([PACMAN_CMD, "-Qqem"], capture_output=True).stdout
