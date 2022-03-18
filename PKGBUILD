@@ -17,17 +17,17 @@ source=("${pkgname}::git+file:///home/etorres/Projects/packaging-scripts")
 sha256sums=('SKIP')
 
 build() {
-    cd "$srcdir"
+    cd $srcdir/$pkgname
     python setup.py build
 }
 
 check() {
-    cd "$srcdir"
+    cd $srcdir/$pkgname
     python -m unittest
 }
 
 package() {
-    cd "$srcdir"
+    cd $srcdir/$pkgname
 
     python setup.py install --root="$pkgdir/" --optimize=1 --skip-build
 
