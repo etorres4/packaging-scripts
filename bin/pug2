@@ -78,7 +78,7 @@ if __name__ == "__main__":
     filename = args.filename
 
     # Run process that lists packages
-    packages = subprocess.run([PACMAN_CMD, "-Qqem"], capture_output=True).stdout
+    packages = subprocess.run([PACMAN_CMD, "-Qqen"], capture_output=True).stdout
 
     # Write package list to file and perform upload
     with tempfile.NamedTemporaryFile() as tmpfile:
