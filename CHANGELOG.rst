@@ -1,12 +1,13 @@
 Changelog for packaging-scripts
 ===============================
 
-Version 1.6
+Version 1.5
 -----------
 
 * Project
   * Rename pacmanconf module to pacman
   * Add config file to /etc
+  * Add pug2 script
 
 Version 1.4
 -----------

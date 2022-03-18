@@ -1,0 +1,70 @@
+#!/usr/bin/python3
+"""Upload a gist containing packages installed on the system.
+
+Dependencies
+============
+* pacman
+* gist
+"""
+
+import argparse
+import configparser
+import logging
+import subprocess
+import tempfile
+
+import packaging_scripts.pacman as pacman
+
+# ========== Constants ==========
+# Commands
+PACMAN_CMD = "/usr/bin/pacman"
+LOCALE = "utf-8"
+
+# Paths
+CONFIG_FILE = '/etc/packaging-scripts.conf'
+DEFAULT_FILENAME = 'pacman-packages.txt'
+
+# ========== Logging setup ==========
+console_formatter = logging.Formatter("==> %(levelname)s %(message)s")
+syslog = logging.getLogger("packaging_scripts")
+syslog.setLevel(logging.DEBUG)
+
+stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler.setLevel(logging.INFO)
+stdout_handler.setFormatter(console_formatter)
+stdout_handler.addFilter(lambda record: record.levelno <= logging.INFO)
+
+stderr_handler = logging.StreamHandler(sys.stderr)
+stderr_handler.setLevel(logging.WARNING)
+stderr_handler.setFormatter(console_formatter)
+
+syslog.addHandler(stdout_handler)
+syslog.addHandler(stderr_handler)
+
+
+# ========== Functions ==========
+"""
+"""
+def configured_to_run():
+    pass
+
+# ========== Main Script ==========
+if __name__ == "__main__":
+    # Check if script is configured to run
+
+    # Parse any arguments
+    parser = argparse.ArgumentParser()
+    # TODO add argument for filename, -f
+    # TODO add optional argument for repository, call pacman.list_configured_repos()
+    args = parser.parse_args()
+
+    # Run process that lists packages
+    # Capture output as byte data
+    packages = subprocess.run([PACMAN_CMD, "-Qqn"], capture_output=True).stdout
+
+    # Write package list to file and perform upload
+    with tmpfile as tempfile.NamedTemporaryFile():
+        # Write to file
+        tmpfile.write(packages)
+        # Upload file through gist
+        subprocess.run(['gist', '-f', DEFAULT_FILENAME, tmpfile.name])
