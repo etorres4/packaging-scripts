@@ -5,8 +5,12 @@ Version 1.5
 -----------
 
 * Project
+  * PKGBUILD: build from git repository directly
+
   * Rename pacmanconf module to pacman
+
   * Add config file to /etc
+
   * Add pug2 script
 
 Version 1.4

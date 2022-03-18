@@ -1,21 +1,20 @@
 # Maintainer: Eric Torres <erictorres4@protonmail.com>
 pkgname=packaging-scripts
-pkgver=1.4
-pkgrel=2
+pkgver=1.5
+pkgrel=1
 pkgdesc="A set of helper scripts for handling Arch Linux packages"
 arch=('any')
 license=('MIT')
-groups=('pacman-helpers')
-depends=('pacman' 'python>=3.6')
-makedepends=('git' 'python-setuptools')
+groups=(pacman-helpers)
+depends=(pacman python pacman-contrib)
+makedepends=(git python-setuptools)
 optdepends=('fzf: for the fqo script'
             'mlocate: for the fqo script')
 checkdepends=('python-hypothesis')
 backup=(etc/apparmor.d/usr.bin.{addpkg,delpkg}
     etc/packaging-scripts.conf)
-source=("$pkgname-$pkgver.tar.gz")
-sha256sums=('7f235f7bc5d500ed2e9ef371678d176d4c9fdff268aac11f52f9fd4891cf8719')
-sha512sums=('74fe9fa108fd0acbfcb24ebbfa91e2aadf356f018938c6ba8fe890bb74e23d06cbfeee2114836ad501a71df7dab4460d03c4c75808f1e71e7610bd3c16a754b5')
+source=("${pkgname}::git+file:///home/etorres/Projects/packaging-scripts")
+sha256sums=('SKIP')
 
 build() {
     cd "$srcdir"
@@ -42,6 +41,9 @@ package() {
     for profile in misc/apparmor/*; do
         install -Dm644 "${profile}" "${pkgdir}/etc/apparmor.d/${profile##*/}"
     done
+
+    # install pug hook
+    install -Dm644 'misc/pug.hook' "${pkgdir}/usr/share/libalpm/hooks"
 
     # install zsh completions
     install -d "${pkgdir}/usr/share/zsh/site-functions"
