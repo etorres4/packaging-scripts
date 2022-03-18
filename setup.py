@@ -4,7 +4,7 @@ from sphinx.setup_command import BuildDoc
 # ========== Constants ==========
 EXCLUDED_PACKAGES = ["test", "tests"]
 PACKAGES = setuptools.find_packages(exclude=EXCLUDED_PACKAGES)
-SCRIPTS = ["bin/addpkg", "bin/delpkg", "bin/fqo"]
+SCRIPTS = ["bin/addpkg", "bin/delpkg", "bin/fqo", "bin/pug2"]
 CMDCLASS = {"build_sphinx": BuildDoc}
 
 
