@@ -1,4 +1,4 @@
-import packaging_scripts.pacmanconf as pacmanconf
+import packaging_scripts.pacman as pacman
 import re
 import unittest
 
@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, patch
 
 
 # ========== Constants ==========
-TESTING_MODULE = f"packaging_scripts.pacmanconf"
+TESTING_MODULE = f"packaging_scripts.pacman"
 
 
 # ========== Unit Tests ==========
