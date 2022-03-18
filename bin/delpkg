@@ -11,7 +11,7 @@ import argparse
 import logging
 import sys
 
-import packaging_scripts.pacmanconf as pacmanconf
+import packaging_scripts.pacman as pacman
 import packaging_scripts.pkgfiles as pkgfiles
 import packaging_scripts.repos as repos
 
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "repository",
-        choices=pacmanconf.list_configured_repos(),
+        choices=pacman.list_configured_repos(),
         help="the repository to operate on",
         metavar="repo",
     )

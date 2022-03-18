@@ -1,6 +1,12 @@
 Changelog for packaging-scripts
 ===============================
 
+Version 1.6
+-----------
+
+* Project
+  * Rename pacmanconf module to pacman
+
 Version 1.4
 -----------
 
