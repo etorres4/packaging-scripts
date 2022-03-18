@@ -11,18 +11,23 @@ import argparse
 import configparser
 import logging
 import subprocess
+import sys
 import tempfile
 
 import packaging_scripts.pacman as pacman
 
 # ========== Constants ==========
 # Commands
-PACMAN_CMD = "/usr/bin/pacman"
+PACLIST_CMD = "/usr/bin/paclist"
 LOCALE = "utf-8"
 
 # Paths
-CONFIG_FILE = '/etc/packaging-scripts.conf'
-DEFAULT_FILENAME = 'pacman-packages.txt'
+CONFIG_FILE = "/etc/packaging-scripts.conf"
+DEFAULT_FILENAME = "pacman-packages.txt"
+
+# Config file options
+CONFIG_SECTION = "Main"
+ENABLE_CONFIG_OPTION = "GIST_PUG_ENABLE"
 
 # ========== Logging setup ==========
 console_formatter = logging.Formatter("==> %(levelname)s %(message)s")
@@ -43,28 +48,48 @@ syslog.addHandler(stderr_handler)
 
 
 # ========== Functions ==========
-"""
-"""
 def configured_to_run():
-    pass
+    """Verify the script is enabled to run in the config file.
+    :returns: true if enabled in config, false if otherwise
+    """
+    config = configparser.ConfigParser()
+    config.read(CONFIG_FILE)
+    return config.getboolean(CONFIG_SECTION, ENABLE_CONFIG_OPTION)
+
 
 # ========== Main Script ==========
 if __name__ == "__main__":
-    # Check if script is configured to run
+    if not configured_to_run():
+        # Silently exit, we don't need to cause an error message with pacman
+        sys.exit(0)
 
     # Parse any arguments
     parser = argparse.ArgumentParser()
-    # TODO add argument for filename, -f
-    # TODO add optional argument for repository, call pacman.list_configured_repos()
+    parser.add_argument(
+        "-f",
+        "--filename",
+        dest="filename",
+        type=str,
+        default=DEFAULT_FILENAME,
+        help="alternative filename to upload as",
+    )
+    parser.add_argument(
+        "repository",
+        choices=pacman.list_configured_repos(),
+        help="the repository to operate on",
+        metavar="repo",
+    )
     args = parser.parse_args()
 
+    filename = args.filename
+    repo = args.repo
+
     # Run process that lists packages
-    # Capture output as byte data
-    packages = subprocess.run([PACMAN_CMD, "-Qqn"], capture_output=True).stdout
+    packages = subprocess.run([PACLIST_CMD, args.repo], capture_output=True).stdout
 
     # Write package list to file and perform upload
-    with tmpfile as tempfile.NamedTemporaryFile():
-        # Write to file
+    with tempfile.NamedTemporaryFile() as tmpfile:
         tmpfile.write(packages)
         # Upload file through gist
-        subprocess.run(['gist', '-f', DEFAULT_FILENAME, tmpfile.name])
+        # We use the filename in the command, not in the tempfile so gist knows what to upload as
+        # subprocess.run(['gist', '-f', args.filename, tmpfile.name])
