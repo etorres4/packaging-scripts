@@ -6,6 +6,7 @@ Version 1.6
 
 * Project
   * Rename pacmanconf module to pacman
+  * Add config file to /etc
 
 Version 1.4
 -----------

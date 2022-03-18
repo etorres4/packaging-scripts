@@ -11,7 +11,8 @@ makedepends=('git' 'python-setuptools')
 optdepends=('fzf: for the fqo script'
             'mlocate: for the fqo script')
 checkdepends=('python-hypothesis')
-backup=(etc/apparmor.d/usr.bin.{addpkg,delpkg})
+backup=(etc/apparmor.d/usr.bin.{addpkg,delpkg}
+    etc/packaging-scripts.conf)
 source=("$pkgname-$pkgver.tar.gz")
 sha256sums=('7f235f7bc5d500ed2e9ef371678d176d4c9fdff268aac11f52f9fd4891cf8719')
 sha512sums=('74fe9fa108fd0acbfcb24ebbfa91e2aadf356f018938c6ba8fe890bb74e23d06cbfeee2114836ad501a71df7dab4460d03c4c75808f1e71e7610bd3c16a754b5')
@@ -33,6 +34,9 @@ package() {
 
     # install README
     install -Dm644 README.rst "${pkgdir}/usr/share/doc/${pkgname}/README.rst"
+
+    # install config file
+    install -Dm644 'misc/packaging-scripts.conf' "${pkgdir}/etc/packaging-scripts.conf"
 
     # install AppArmor profiles
     for profile in misc/apparmor/*; do
