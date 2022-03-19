@@ -7,81 +7,73 @@ Dependencies
 * gist
 """
 
-import argparse
 import configparser
-import logging
+import re
 import subprocess
 import sys
-import tempfile
-
-import packaging_scripts.pacman as pacman
 
 # ========== Constants ==========
-# Commands
-PACMAN_CMD = "/usr/bin/pacman"
-LOCALE = "utf-8"
-
 # Paths
 CONFIG_FILE = "/etc/packaging-scripts.conf"
 DEFAULT_FILENAME = "pacman-packages.txt"
 
 # Config file options
-CONFIG_SECTION = "Main"
-ENABLE_CONFIG_OPTION = "GIST_PUG_ENABLE"
-
-# ========== Logging setup ==========
-console_formatter = logging.Formatter("==> %(levelname)s %(message)s")
-syslog = logging.getLogger("packaging_scripts")
-syslog.setLevel(logging.DEBUG)
-
-stdout_handler = logging.StreamHandler(sys.stdout)
-stdout_handler.setLevel(logging.INFO)
-stdout_handler.setFormatter(console_formatter)
-stdout_handler.addFilter(lambda record: record.levelno <= logging.INFO)
-
-stderr_handler = logging.StreamHandler(sys.stderr)
-stderr_handler.setLevel(logging.WARNING)
-stderr_handler.setFormatter(console_formatter)
-
-syslog.addHandler(stdout_handler)
-syslog.addHandler(stderr_handler)
+CONFIG_SECTION = "pug2"
+CONFIG_OPTION_DESCRIPTION = "GIST_DESCRIPTION"
+CONFIG_OPTION_ENABLE = "GIST_PUG_ENABLE"
+CONFIG_OPTION_FILENAME = "GIST_FILENAME"
+CONFIG_OPTION_ID = "GIST_ID"
 
 
 # ========== Functions ==========
-def configured_to_run():
-    """Verify the script is enabled to run in the config file.
-    :returns: true if enabled in config, false if otherwise
+def extract_gist_id(url):
+    """Extract the gist id from a gist URL.
+
+    Normalizes URLs from
+    * http(s)?://<subdomain>.<second level domain>.<top level domain>/<username>/<gist ID>
+    * <username>/<gist ID>
+    * <gist ID>
+
+    to one of
+
+    * <username>/<gist ID>
+    * <gist ID>
+
+    both of which are valid for use with gist
+
+    :param url: a valid URL containing the gist id
+    :type url: str
+    :returns: the valid gist ID
+    :rtype: str
     """
-    config = configparser.ConfigParser()
-    config.read(CONFIG_FILE)
-    return config.getboolean(CONFIG_SECTION, ENABLE_CONFIG_OPTION)
+    return re.sub("^http(s)?://[\w]*.[\w]*.[\w]/", "", url)
 
 
 # ========== Main Script ==========
 if __name__ == "__main__":
-    if not configured_to_run():
-        # Silently exit, we don't need to cause an error message with pacman
+    config = configparser.ConfigParser()
+    config.read(CONFIG_FILE)
+
+    # Check if script is enabled to run; if not, exit silently
+    if not config.getboolean(CONFIG_SECTION, CONFIG_OPTION_ENABLE):
         sys.exit(0)
 
-    # Parse any arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-f",
-        "--filename",
-        dest="filename",
-        type=str,
-        default=DEFAULT_FILENAME,
-        help="alternative filename to upload as",
-    )
-    args = parser.parse_args()
+    gist_description = config.get(CONFIG_SECTION, CONFIG_OPTION_DESCRIPTION)
+    gist_filename = config.get(CONFIG_SECTION, CONFIG_OPTION_FILENAME)
+    gist_id = config.get(CONFIG_SECTION, CONFIG_OPTION_ID)
 
-    filename = args.filename
-
-    # Run process that lists packages
-    packages = subprocess.run([PACMAN_CMD, "-Qqen"], capture_output=True).stdout
-
-    # Write package list to file and perform upload
-    with tempfile.NamedTemporaryFile() as tmpfile:
-        tmpfile.write(packages)
-        # We use the filename in the command, not in the tempfile so gist knows what to upload as
-        subprocess.run(["gist", "-f", args.filename, tmpfile.name])
+    if gist_id == "":
+        # run gist, then extract url and save to config file
+        gist_process = subprocess.run(
+            f"pacman -Qqen | gist --filename {gist_filename} --description {gist_description}",
+            text=True,
+            capture_output=True,
+            shell=True,
+        )
+        config[CONFIG_SECTION][CONFIG_OPTION_ID] = extract_gist_id(gist_process.stdout)
+    else:
+        subprocess.run(
+            f"pacman -Qqen | gist --update {gist_id} --filename {gist_filename} --description {gist_description}",
+            capture_output=True,
+            shell=True,
+        )

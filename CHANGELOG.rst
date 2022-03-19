@@ -1,6 +1,15 @@
 Changelog for packaging-scripts
 ===============================
 
+Version 1.5.2
+-------------
+
+* pug2
+
+    * Initial full implementation of the pug2 script
+
+    * Create config file section for pug2 options
+
 Version 1.5.1
 -------------
 
