@@ -1,6 +1,13 @@
 Changelog for packaging-scripts
 ===============================
 
+Version 1.5.3
+-------------
+
+* Project
+
+  * PKGBUILD: make use of pkgver()
+
 Version 1.5.2
 -------------
 
@@ -21,6 +28,7 @@ Version 1.5
 -----------
 
 * Project
+
   * PKGBUILD: build from git repository directly
 
   * Rename pacmanconf module to pacman
@@ -33,6 +41,7 @@ Version 1.4
 -----------
 
 * Project
+
   * Add CHANGELOG
 
   * Minor code and comment cleanups

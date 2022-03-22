@@ -16,6 +16,11 @@ backup=(etc/apparmor.d/usr.bin.{addpkg,delpkg}
 source=("${pkgname}::git+file:///home/etorres/Projects/packaging-scripts")
 sha256sums=('SKIP')
 
+pkgver() {
+    cd $srcdir/$pkgname
+    python setup.py --version
+}
+
 build() {
     cd $srcdir/$pkgname
     python setup.py build
