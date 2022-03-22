@@ -46,7 +46,26 @@ def extract_gist_id(url):
     :returns: the valid gist ID
     :rtype: str
     """
-    return re.sub("^http(s)?://[\w]*.[\w]*.[\w]/", "", url)
+    return re.sub("^http(s)?://[\\w]*.[\\w]*.[\\w]/", "", url)
+
+
+def retrieve_gist_info(gist_id):
+    """Retrieve info from gist ID that is specified in the config file.
+
+    :param gist_id: string id to read gist info
+    :returns: data read from gist
+    :rtype: bytes
+    """
+    return subprocess.run(f"gist --read {gist_id}", capture_output=True).stdout
+
+
+def package_lists_match(gist_id):
+    """Compare local package list to that of pacman and gist, return if they match."""
+    local_packages = subprocess.run(["pacman", "-Qqen"], capture_output=True).stdout
+    gist_packages = subprocess.run(
+        ["gist", "--read", gist_id], capture_output=True
+    ).stdout
+    return local_packages == gist_packages
 
 
 # ========== Main Script ==========
@@ -63,15 +82,18 @@ if __name__ == "__main__":
     gist_id = config.get(CONFIG_SECTION, CONFIG_OPTION_ID)
 
     if gist_id == "":
-        # run gist, then extract url and save to config file
+        print("No gist ID detected, creating new.")
         gist_process = subprocess.run(
             f"pacman -Qqen | gist --filename {gist_filename} --description {gist_description}",
-            text=True,
             capture_output=True,
             shell=True,
         )
         config[CONFIG_SECTION][CONFIG_OPTION_ID] = extract_gist_id(gist_process.stdout)
+    elif package_lists_match(gist_id):
+        print("Package lists match, no update necessary.")
+        sys.exit(0)
     else:
+        print("Package lists differ, updating.")
         subprocess.run(
             f"pacman -Qqen | gist --update {gist_id} --filename {gist_filename} --description {gist_description}",
             capture_output=True,

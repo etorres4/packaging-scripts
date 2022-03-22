@@ -10,6 +10,10 @@ Version 1.5.3
 
   * packaging-scripts.conf: remove quotes from empty settings
 
+* pug2
+
+  * Compare package lists before updating gist version
+
 Version 1.5.2
 -------------
 
