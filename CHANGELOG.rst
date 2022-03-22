@@ -8,6 +8,8 @@ Version 1.5.3
 
   * PKGBUILD: make use of pkgver()
 
+  * packaging-scripts.conf: remove quotes from empty settings
+
 Version 1.5.2
 -------------
 
