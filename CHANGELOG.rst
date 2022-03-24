@@ -8,6 +8,8 @@ Version 1.6.0
 
   * Print error messages from gist when necessary
 
+  * Hook: add packaging-scripts as dependency
+
 
 Version 1.5.3
 -------------
