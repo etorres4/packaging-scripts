@@ -82,20 +82,39 @@ if __name__ == "__main__":
     gist_id = config.get(CONFIG_SECTION, CONFIG_OPTION_ID)
 
     if gist_id == "":
-        print("No gist ID detected, creating new.")
-        gist_process = subprocess.run(
-            f"pacman -Qqen | gist --filename {gist_filename} --description {gist_description}",
-            capture_output=True,
-            shell=True,
-        )
-        config[CONFIG_SECTION][CONFIG_OPTION_ID] = extract_gist_id(gist_process.stdout)
+        try:
+            print("No gist ID detected, creating new.")
+            gist_process = subprocess.run(
+                f"pacman -Qqen | gist --filename {gist_filename} --description {gist_description}",
+                capture_output=True,
+                text=True,
+                shell=True,
+                check=True,
+            )
+        except subprocess.CalledProcessError as e:
+            print(e.stdout.strip(), file=sys.stderr)
+            sys.exit(e.returncode)
+        else:
+            config[CONFIG_SECTION][CONFIG_OPTION_ID] = extract_gist_id(
+                gist_process.stdout
+            )
+            print("Gist creation complete.")
+
     elif package_lists_match(gist_id):
         print("Package lists match, no update necessary.")
         sys.exit(0)
     else:
-        print("Package lists differ, updating.")
-        subprocess.run(
-            f"pacman -Qqen | gist --update {gist_id} --filename {gist_filename} --description {gist_description}",
-            capture_output=True,
-            shell=True,
-        )
+        try:
+            print("Package lists differ, updating.")
+            subprocess.run(
+                f"pacman -Qqen | gist --update {gist_id} --filename {gist_filename} --description {gist_description}",
+                capture_output=True,
+                text=True,
+                shell=True,
+                check=True,
+            )
+        except subprocess.CalledProcessError as e:
+            print(e.stdout.strip(), file=sys.stderr)
+            sys.exit(e.returncode)
+        else:
+            print("Update complete.")

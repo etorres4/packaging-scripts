@@ -1,6 +1,14 @@
 Changelog for packaging-scripts
 ===============================
 
+Version 1.6.0
+-------------
+
+* pug2
+
+  * Print error messages from gist when necessary
+
+
 Version 1.5.3
 -------------
 
