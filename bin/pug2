@@ -25,6 +25,7 @@ CONFIG_OPTION_ENABLE = "RUN_ON_PACMAN_HOOK"
 CONFIG_OPTION_FILENAME = "GIST_FILENAME"
 CONFIG_OPTION_ID = "GIST_ID"
 
+DESCRIPTION = "Send a list of explicitly installed pacman packages to a gist"
 
 # ========== Functions ==========
 def extract_gist_id(url):
@@ -71,7 +72,7 @@ def package_lists_match(gist_id):
 
 # ========== Main Script ==========
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=DESCRIPTION)
     parser.add_argument(
         "-c",
         "--check-if-enabled",

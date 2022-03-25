@@ -1,6 +1,13 @@
 Changelog for packaging-scripts
 ===============================
 
+Version 1.6.1
+-------------
+
+* pug2
+
+  * Add description to help message
+
 Version 1.6.0
 -------------
 
