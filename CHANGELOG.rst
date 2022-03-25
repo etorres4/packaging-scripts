@@ -8,6 +8,8 @@ Version 1.6.1
 
   * Add description to help message
 
+  * Add --force-update option to script
+
 Version 1.6.0
 -------------
 

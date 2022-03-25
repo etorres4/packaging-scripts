@@ -80,6 +80,12 @@ if __name__ == "__main__":
         help="check if enabled in config file",
         action="store_true",
     )
+    parser.add_argument(
+        "-f",
+        "--force-update",
+        help="force update regardless if package lists match",
+        action="store_true",
+    )
     args = parser.parse_args()
     config = configparser.ConfigParser()
     config.read(CONFIG_FILE)
@@ -113,7 +119,7 @@ if __name__ == "__main__":
             )
             print("Gist creation complete.")
 
-    elif package_lists_match(gist_id):
+    elif package_lists_match(gist_id, packages) and not args.force_update:
         print("Package lists match, no update necessary.")
         sys.exit(0)
     else:
