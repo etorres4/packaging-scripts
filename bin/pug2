@@ -7,6 +7,7 @@ Dependencies
 * gist
 """
 
+import argparse
 import configparser
 import re
 import subprocess
@@ -20,7 +21,7 @@ DEFAULT_FILENAME = "pacman-packages.txt"
 # Config file options
 CONFIG_SECTION = "pug2"
 CONFIG_OPTION_DESCRIPTION = "GIST_DESCRIPTION"
-CONFIG_OPTION_ENABLE = "GIST_PUG_ENABLE"
+CONFIG_OPTION_ENABLE = "RUN_ON_PACMAN_HOOK"
 CONFIG_OPTION_FILENAME = "GIST_FILENAME"
 CONFIG_OPTION_ID = "GIST_ID"
 
@@ -70,11 +71,22 @@ def package_lists_match(gist_id):
 
 # ========== Main Script ==========
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-c",
+        "--check-if-enabled",
+        dest="check_enabled",
+        help="check if enabled in config file",
+        action="store_true",
+    )
+    args = parser.parse_args()
     config = configparser.ConfigParser()
     config.read(CONFIG_FILE)
 
     # Check if script is enabled to run; if not, exit silently
-    if not config.getboolean(CONFIG_SECTION, CONFIG_OPTION_ENABLE):
+    if args.check_enabled and not config.getboolean(
+        CONFIG_SECTION, CONFIG_OPTION_ENABLE
+    ):
         sys.exit(0)
 
     gist_description = config.get(CONFIG_SECTION, CONFIG_OPTION_DESCRIPTION)

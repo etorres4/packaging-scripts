@@ -6,6 +6,13 @@ Version 1.6.0
 
 * pug2
 
+  * Add --check-if-enabled option for running with pacman hook
+
+Version 1.6.0
+-------------
+
+* pug2
+
   * Print error messages from gist when necessary
 
   * Hook: add packaging-scripts as dependency

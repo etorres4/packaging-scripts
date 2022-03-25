@@ -9,4 +9,4 @@ Target = *
 Depends = coreutils
 Depends = packaging-scripts
 When = PostTransaction
-Exec = /usr/bin/pug2
+Exec = /usr/bin/pug2 --check-if-enabled
