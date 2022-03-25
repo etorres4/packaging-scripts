@@ -1,7 +1,7 @@
 Changelog for packaging-scripts
 ===============================
 
-Version 1.6.1
+Version 1.7.1
 -------------
 
 * pug2
@@ -12,7 +12,7 @@ Version 1.6.1
 
   * General code cleanup
 
-Version 1.6.0
+Version 1.7.0
 -------------
 
 * pug2

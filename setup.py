@@ -16,7 +16,7 @@ with open("README.rst", "r") as fh:
 # ========== Package Setup ==========
 setuptools.setup(
     name="packaging_scripts",
-    version="1.7.0",
+    version="1.7.1",
     author="Eric Russel Torres",
     author_email="erictorres4@protonmail.com",
     description="A set of helpers for automating borg interaction",
