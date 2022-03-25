@@ -10,6 +10,8 @@ Version 1.6.1
 
   * Add --force-update option to script
 
+  * General code cleanup
+
 Version 1.6.0
 -------------
 

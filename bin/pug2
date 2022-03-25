@@ -58,16 +58,19 @@ def retrieve_gist_info(gist_id):
     :returns: data read from gist
     :rtype: bytes
     """
-    return subprocess.run(f"gist --read {gist_id}", capture_output=True).stdout
-
-
-def package_lists_match(gist_id):
-    """Compare local package list to that of pacman and gist, return if they match."""
-    local_packages = subprocess.run(["pacman", "-Qqen"], capture_output=True).stdout
-    gist_packages = subprocess.run(
-        ["gist", "--read", gist_id], capture_output=True
+    return subprocess.run(
+        ["gist", "--read", gist_id], capture_output=True, text=True
     ).stdout
-    return local_packages == gist_packages
+
+
+def package_lists_match(gist_id, package_list):
+    """Compare local package list to that of pacman and gist, return if they match.
+    :param gist_id: ID of the gist to read from
+    :param package_list: Newline separated list of packages installed on the system
+    :type gist_id: str
+    :type package_list: str
+    """
+    return retrieve_gist_info(gist_id) == package_list
 
 
 # ========== Main Script ==========
@@ -99,15 +102,20 @@ if __name__ == "__main__":
     gist_description = config.get(CONFIG_SECTION, CONFIG_OPTION_DESCRIPTION)
     gist_filename = config.get(CONFIG_SECTION, CONFIG_OPTION_FILENAME)
     gist_id = config.get(CONFIG_SECTION, CONFIG_OPTION_ID)
+    gist_opts = ["--filename", gist_filename, "--description", gist_description]
+
+    packages = subprocess.run(
+        ["pacman", "-Qqen"], capture_output=True, text=True
+    ).stdout
 
     if gist_id == "":
         try:
             print("No gist ID detected, creating new.")
             gist_process = subprocess.run(
-                f"pacman -Qqen | gist --filename {gist_filename} --description {gist_description}",
+                ["gist", *gist_opts],
+                input=packages,
                 capture_output=True,
                 text=True,
-                shell=True,
                 check=True,
             )
         except subprocess.CalledProcessError as e:
@@ -124,12 +132,12 @@ if __name__ == "__main__":
         sys.exit(0)
     else:
         try:
-            print("Package lists differ, updating.")
+            print("Updating package list.")
             subprocess.run(
-                f"pacman -Qqen | gist --update {gist_id} --filename {gist_filename} --description {gist_description}",
+                ["gist", "--update", gist_id, *gist_opts],
+                input=packages,
                 capture_output=True,
                 text=True,
-                shell=True,
                 check=True,
             )
         except subprocess.CalledProcessError as e:
