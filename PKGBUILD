@@ -10,7 +10,7 @@ depends=(gist pacman python)
 makedepends=(git python-setuptools)
 optdepends=('fzf: for the fqo script'
             'mlocate: for the fqo script')
-checkdepends=(python-hypothesis python-pytest)
+checkdepends=(python-hypothesis python-pytest python-sphinx)
 backup=(etc/apparmor.d/usr.bin.{addpkg,delpkg}
     etc/packaging-scripts.conf)
 source=("${pkgname}::git+file:///home/etorres/Projects/packaging-scripts")
