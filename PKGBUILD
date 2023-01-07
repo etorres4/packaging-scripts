@@ -1,12 +1,12 @@
 # Maintainer: Eric Torres <erictorres4@protonmail.com>
 pkgname=packaging-scripts
 pkgver=1.7.1
-pkgrel=1
+pkgrel=2
 pkgdesc="A set of helper scripts for handling Arch Linux packages"
 arch=('any')
 license=('MIT')
 groups=(pacman-helpers)
-depends=(gist pacman python)
+depends=(gist mlocate pacman python)
 makedepends=(git python-setuptools)
 optdepends=('fzf: for the fqo script'
             'mlocate: for the fqo script')
@@ -17,22 +17,22 @@ source=("${pkgname}::git+file:///home/etorres/Projects/packaging-scripts")
 sha256sums=('SKIP')
 
 pkgver() {
-    cd $srcdir/$pkgname
+    cd "$srcdir/$pkgname"
     python setup.py --version
 }
 
 build() {
-    cd $srcdir/$pkgname
+    cd "$srcdir/$pkgname"
     python setup.py build
 }
 
 check() {
-    cd $srcdir/$pkgname
+    cd "$srcdir/$pkgname"
     python -m unittest
 }
 
 package() {
-    cd $srcdir/$pkgname
+    cd "$srcdir/$pkgname"
 
     python setup.py install --root="$pkgdir/" --optimize=1 --skip-build
 
