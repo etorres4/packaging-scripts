@@ -50,7 +50,7 @@ def db_modify(operation, db, *args):
     try:
         process = _run_script(operation, str(db), *args)
     except subprocess.CalledProcessError as e:
-        raise RepoAddError(e)
+        raise RepoAddError(e) from e
     else:
         syslog.debug(process.stdout)
         syslog.info("Database operation complete")
