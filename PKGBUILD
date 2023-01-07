@@ -6,7 +6,7 @@ pkgdesc="A set of helper scripts for handling Arch Linux packages"
 arch=('any')
 license=('MIT')
 groups=(pacman-helpers)
-depends=(gist mlocate pacman python)
+depends=(gist mlocate pacman python pyalpm)
 makedepends=(git python-setuptools)
 optdepends=('fzf: for the fqo script'
             'mlocate: for the fqo script')
@@ -56,4 +56,7 @@ package() {
         install -m644 "${completion}"\
             "${pkgdir}/usr/share/zsh/site-functions/${completion##*/*}"
     done
+
+    # install license
+    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
