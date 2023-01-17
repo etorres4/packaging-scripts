@@ -56,7 +56,12 @@ parser.add_argument("patterns", nargs="+", help="file pattern to search for")
 
 args = parser.parse_args()
 
-files = locate_files(args.patterns)
-selected_file = run_fzf(files)
+try:
+    files = locate_files(args.patterns)
+# Locate binary is optional for package, but required for script
+except FileNotFoundError:
+    print("locate binary not found, install and re-run script")
+else:
+    selected_file = run_fzf(files)
 
 subprocess.run([PACMAN_CMD, "-Qo", selected_file])
