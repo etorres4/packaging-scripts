@@ -1,6 +1,6 @@
 # Maintainer: Eric Torres <erictorres4@protonmail.com>
 pkgname=packaging-scripts
-pkgver=1.7.1
+pkgver=1.7.2
 pkgrel=2
 pkgdesc="A set of helper scripts for handling Arch Linux packages"
 arch=('any')
@@ -11,15 +11,9 @@ makedepends=(git python-setuptools)
 optdepends=('fzf: for the fqo script'
             'mlocate: for the fqo script')
 checkdepends=(python-hypothesis python-pytest python-sphinx)
-backup=(etc/apparmor.d/usr.bin.{addpkg,delpkg}
-    etc/packaging-scripts.conf)
+backup=(etc/apparmor.d/usr.bin.{addpkg,delpkg} etc/packaging-scripts.conf)
 source=("${pkgname}::git+file:///home/etorres/Projects/packaging-scripts")
 sha256sums=('SKIP')
-
-pkgver() {
-    cd "$srcdir/$pkgname"
-    python setup.py --version
-}
 
 build() {
     cd "$srcdir/$pkgname"
