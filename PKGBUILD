@@ -10,7 +10,7 @@ depends=(gist mlocate pacman python pyalpm)
 makedepends=(git python-setuptools)
 optdepends=('fzf: for the fqo script'
             'mlocate: for the fqo script')
-checkdepends=(python-hypothesis python-pytest python-sphinx)
+checkdepends=(python-hypothesis python-pytest)
 backup=(etc/apparmor.d/usr.bin.{addpkg,delpkg} etc/packaging-scripts.conf)
 source=("${pkgname}::git+file:///home/etorres/Projects/packaging-scripts")
 sha256sums=('SKIP')
