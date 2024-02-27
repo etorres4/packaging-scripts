@@ -4,3 +4,4 @@ packaging-scripts
 *.pkg.tar.xz.sig
 *.tar.gz
 .hypothesis
+*.zst
