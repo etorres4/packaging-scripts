@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" Delete packages from a repository.
+"""Delete packages from a repository.
 
 Functions:
 ==========

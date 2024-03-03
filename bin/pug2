@@ -27,6 +27,7 @@ CONFIG_OPTION_ID = "GIST_ID"
 
 DESCRIPTION = "Send a list of explicitly installed pacman packages to a gist"
 
+
 # ========== Functions ==========
 def extract_gist_id(url):
     """Extract the gist id from a gist URL.
