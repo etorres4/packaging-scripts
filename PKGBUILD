@@ -6,7 +6,7 @@ pkgdesc="A set of helper scripts for handling Arch Linux packages"
 arch=('any')
 license=('MIT')
 groups=(pacman-helpers)
-depends=(gist mlocate pacman python python-docker pyalpm)
+depends=(gist mlocate pacman python pyalpm)
 makedepends=(git python-setuptools)
 optdepends=('fzf: for the fqo script'
             'mlocate: for the fqo script')
