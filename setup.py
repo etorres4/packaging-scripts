@@ -12,20 +12,4 @@ with open("README.rst", "r") as fh:
 
 
 # ========== Package Setup ==========
-setuptools.setup(
-    name="packaging_scripts",
-    version="1.7.1",
-    author="Eric Russel Torres",
-    author_email="erictorres4@protonmail.com",
-    description="A set of scripts for automating pacman database interaction",
-    long_description=long_description,
-    long_description_content_type="text/plain",
-    url="",
-    packages=PACKAGES,
-    scripts=SCRIPTS,
-    classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-    ],
-)
+setuptools.setup(packages=PACKAGES)

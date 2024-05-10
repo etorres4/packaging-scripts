@@ -1,2 +1,17 @@
 [build-system]
-requires=["build", "setuptools", "wheel"]
+requires=["build", "setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "packaging_scripts"
+authors = ["Eric Torres"]
+version = "1.7.1"
+description = "A set of scripts for automating pacman database interaction"
+readme = "README.rst"
+license = "LICENSE"
+scripts = ["bin/addpkg", "bin/delpkg", "bin/fqo", "bin/pug2"]
+classifiers=[
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
