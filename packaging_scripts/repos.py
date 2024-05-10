@@ -1,5 +1,4 @@
-"""Module for pacman repository helper functions.
-"""
+"""Module for pacman repository helper functions."""
 
 import logging
 import subprocess
