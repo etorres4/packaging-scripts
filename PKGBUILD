@@ -1,7 +1,7 @@
 # Maintainer: Eric Torres <eric.torres@its-et.me>
 pkgname=packaging-scripts
 pkgver=1.7.1
-pkgrel=4
+pkgrel=5
 pkgdesc="A set of helper scripts for handling Arch Linux packages"
 arch=('any')
 license=('MIT')
