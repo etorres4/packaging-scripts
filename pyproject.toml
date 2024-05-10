@@ -8,10 +8,13 @@ authors = ["Eric Torres"]
 version = "1.7.1"
 description = "A set of scripts for automating pacman database interaction"
 readme = "README.rst"
-license = "LICENSE"
+license = "MIT"
 scripts = ["bin/addpkg", "bin/delpkg", "bin/fqo", "bin/pug2"]
 classifiers=[
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+
+[project.urls]
+Homepage = "https://github.com/etorres4/packaging-scripts"
+Repository = "https://github.com/etorres4/packaging-scripts"
