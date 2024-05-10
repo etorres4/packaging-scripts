@@ -1,7 +1,7 @@
 __pycache__
 packaging-scripts
-*.pkg.tar.xz
-*.pkg.tar.xz.sig
+*.log
+*.pkg.tar.*
 *.tar.gz
 .hypothesis
 *.zst
