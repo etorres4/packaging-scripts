@@ -7,7 +7,7 @@ arch=('any')
 license=('MIT')
 groups=(pacman-helpers)
 depends=(gist mlocate pacman python pyalpm)
-makedepends=(git python-setuptools)
+makedepends=(python-build python-install python-setuptools)
 optdepends=('fzf: for the fqo script'
             'mlocate: for the fqo script')
 checkdepends=(python-hypothesis python-pytest)
@@ -17,18 +17,17 @@ sha256sums=('SKIP')
 
 build() {
     cd "$srcdir/$pkgname"
-    python setup.py build
+    python -m build --wheel --no-isolation
 }
 
 check() {
     cd "$srcdir/$pkgname"
-    python -m unittest
+    pytest
 }
 
 package() {
     cd "$srcdir/$pkgname"
-
-    python setup.py install --root="$pkgdir/" --optimize=1 --skip-build
+    python -m installer --destdir="$pkgdir" dist/*.whl
 
     # install README
     install -Dm644 README.rst "${pkgdir}/usr/share/doc/${pkgname}/README.rst"
