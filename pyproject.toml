@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "packaging_scripts"
-authors = ["Eric Torres"]
+authors = ["Eric Torres eric.torres@its-et.me"]
 version = "1.7.1"
 description = "A set of scripts for automating pacman database interaction"
 readme = "README.rst"
