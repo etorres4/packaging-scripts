@@ -1,5 +1,2 @@
 [build-system]
-requires=["build", "wheel"]
-
-[tool.build_find]
-paths=["packaging_scripts"]
+requires=["build", "setuptools", "wheel"]

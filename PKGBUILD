@@ -1,13 +1,13 @@
 # Maintainer: Eric Torres <eric.torres@its-et.me>
 pkgname=packaging-scripts
 pkgver=1.7.1
-pkgrel=5
+pkgrel=4
 pkgdesc="A set of helper scripts for handling Arch Linux packages"
 arch=('any')
 license=('MIT')
 groups=(pacman-helpers)
 depends=(gist mlocate pacman python pyalpm)
-makedepends=(git python-build python-installer python-wheel)
+makedepends=(git python-setuptools)
 optdepends=('fzf: for the fqo script'
             'mlocate: for the fqo script')
 checkdepends=(python-hypothesis python-pytest)
@@ -17,18 +17,18 @@ sha256sums=('SKIP')
 
 build() {
     cd "$srcdir/$pkgname"
-    python -m build --no-isolation
+    python setup.py build
 }
 
 check() {
     cd "$srcdir/$pkgname"
-    pytest
+    python -m unittest
 }
 
 package() {
     cd "$srcdir/$pkgname"
 
-    python -m installer --destdir="$pkgdir" dist/*.whl
+    python setup.py install --root="$pkgdir/" --optimize=1 --skip-build
 
     # install README
     install -Dm644 README.rst "${pkgdir}/usr/share/doc/${pkgname}/README.rst"
