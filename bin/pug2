@@ -75,7 +75,7 @@ def package_lists_match(gist_id, package_list):
 
 
 # ========== Main Script ==========
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(description=DESCRIPTION)
     parser.add_argument(
         "-c",
@@ -146,3 +146,7 @@ if __name__ == "__main__":
             sys.exit(e.returncode)
         else:
             print("Update complete.")
+
+
+if __name__ == "__main__":
+    main()

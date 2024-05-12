@@ -42,7 +42,7 @@ syslog.addHandler(stderr_handler)
 
 
 # ========== Main Script ==========
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-c", "--cachedir", help="alternative directory to use for deleting package"
@@ -109,3 +109,7 @@ if __name__ == "__main__":
             repos.db_modify("remove", db, *opts, *pkgs)
         except repos.RepoAddError as e:
             syslog.error(e)
+
+
+if __name__ == "__main__":
+    main()
