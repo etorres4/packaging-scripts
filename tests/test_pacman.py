@@ -1,6 +1,3 @@
-
-
-
 # ========== Constants ==========
 TESTING_MODULE = "packaging_scripts.pacman"
 
