@@ -7,7 +7,7 @@ arch=('any')
 license=('MIT')
 groups=(pacman-helpers)
 depends=(gist mlocate pacman python pyalpm)
-makedepends=(git python-build python-installer python-setuptools)
+makedepends=(git python-build python-installer python-setuptools python-wheel)
 optdepends=('fzf: for the fqo script'
             'mlocate: for the fqo script')
 checkdepends=(python-hypothesis python-pytest)
