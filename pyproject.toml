@@ -1,20 +1,20 @@
 [build-system]
-requires=["setuptools", "wheel"]
+requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "packaging_scripts"
-authors = [{name="Eric Torres", email="eric.torres@its-et.me"}]
+authors = [{ name = "Eric Torres", email = "eric.torres@its-et.me" }]
 version = "1.7.1"
 description = "A set of scripts for automating pacman database interaction"
 readme = "README.rst"
-license = {file = "LICENSE"}
-classifiers=[
-    "Intended Audience :: Developers",
-    "Topic :: Software Development :: Build Tools",
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+license = { file = "LICENSE" }
+classifiers = [
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Build Tools",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
 ]
 
 [project.urls]
